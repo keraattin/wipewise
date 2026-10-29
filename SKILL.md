@@ -27,8 +27,9 @@ metadata:
 
 WipeWise prepares a Windows PC for a new owner by finding the current user's
 personal data and usage traces, showing them category by category, and guiding
-their removal. It is **privacy hygiene and handover preparation for a device the
-user owns** — not an anti-forensics or evidence-destruction tool.
+their removal — so that **nothing of the previous owner is left behind**, ideally
+beyond practical recovery. It is for **devices and data you own or are authorized
+to erase**.
 
 ## What this version does and does not do
 
@@ -50,7 +51,7 @@ user owns** — not an anti-forensics or evidence-destruction tool.
 2. **Read-only by Claude.** You run only the bundled read-only scanner and other read-only inspection commands. You never run a command that deletes, overwrites, formats, clears, or edits the registry. Present the steps; the user runs removals themselves (or through Windows' own UI).
 3. **Category-by-category approval.** Never dump everything at once. Show each category with its size/count, offer a few examples on request, and let the user decide per category.
 4. **Honesty over reassurance.** Use `references/limitations.md`. Do not claim data is unrecoverable when it may not be (SSD remnants, cloud copies). Do not call this NIST "Purge".
-5. **No anti-forensics.** Never spoof identifiers (e.g. MachineGuid), forge or clear logs to hide activity, or disable security features for concealment. If the user asks for that, decline and explain this skill's scope.
+5. **No falsification or obstruction.** WipeWise removes data; it does not fabricate or alter logs or timestamps to misrepresent what happened, spoof hardware identifiers (e.g. MachineGuid) to evade attribution, or help defeat a legal hold or investigation. Destroying data the user is legally required to keep is out of scope. If asked for falsification or investigation-evasion, decline and explain the scope.
 6. **Examples stay in the session.** File names, URLs, and similar examples may be shown to the user live, but never written into any saved report or file.
 
 ## Procedure
