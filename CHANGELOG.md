@@ -4,6 +4,20 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.3] - 2026-10-30
+
+More application and artifact coverage. Still **read-only and guidance-only.**
+
+### Added
+- ~240 more read-only probes (now ~645) and ~230 more catalog entries (now
+  600+ artifacts), covering: pre-release browser channels and many more
+  browsers; more messengers and email clients; **Phone Link** (mirrored SMS,
+  photos and call history); more media players, creative tools, game launchers
+  and emulators; more cloud CLIs, VCS/CI and database tools (including the
+  `rclone` token store); more password managers, crypto wallets and desktop
+  authenticators; more cloud-sync and VPN clients; older Office/Acrobat version
+  hives; and deeper forensic traces (BAM/DAM, Shimcache).
+
 ## [0.1.2] - 2026-10-29
 
 Structural coverage and an accuracy fix. Still **read-only and guidance-only.**
@@ -66,6 +80,7 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.1.3]: https://github.com/keraattin/wipewise/releases/tag/v0.1.3
 [0.1.2]: https://github.com/keraattin/wipewise/releases/tag/v0.1.2
 [0.1.1]: https://github.com/keraattin/wipewise/releases/tag/v0.1.1
 [0.1.0]: https://github.com/keraattin/wipewise/releases/tag/v0.1.0

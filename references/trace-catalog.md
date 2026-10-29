@@ -38,6 +38,11 @@ Honest limits and the standards behind them: `limitations.md` and `standards.md`
 - [More credentials: remote, database, CLI, managers & VPN](#more-credentials-remote-database-cli-managers--vpn)
 - [Activity history & forensic traces](#activity-history--forensic-traces)
 - [System, devices, network, identity & AI](#system-devices-network-identity--ai)
+- [More browsers, messaging & email clients](#more-browsers-messaging--email-clients)
+- [More media, creative, games & built-in apps](#more-media-creative-games--built-in-apps)
+- [More developer, cloud & database tools](#more-developer-cloud--database-tools)
+- [More password managers, wallets, cloud & VPN](#more-password-managers-wallets-cloud--vpn)
+- [Version-specific hives & deeper forensic/system traces](#version-specific-hives--deeper-forensicsystem-traces)
 - [Scope: other accounts, other volumes & recoverability](#scope-other-accounts-other-volumes--recoverability)
 
 ---
@@ -2711,6 +2716,1670 @@ Two honesty rules run through this whole section:
 - **Remove (user runs):** Nothing to clear for privacy; feature toggles reset with the profile/PC on a reset.
 - **Survives:** No stored captures to survive. Not a data-leak concern.
 - **Admin:** No.
+
+---
+
+## More browsers, messaging & email clients
+
+Additional browsers and communication apps beyond the core set above - each keeps its own profile, history and account data.
+
+### Chrome and Edge pre-release channels (Beta, Dev, Canary)
+- **Where:** Each channel keeps its own separate profile tree, independent of the stable browser:
+  - Chrome Beta `%LOCALAPPDATA%\Google\Chrome Beta\User Data`
+  - Chrome Dev `%LOCALAPPDATA%\Google\Chrome Dev\User Data`
+  - Chrome Canary `%LOCALAPPDATA%\Google\Chrome SxS\User Data`
+  - Edge Beta `%LOCALAPPDATA%\Microsoft\Edge Beta\User Data`
+  - Edge Dev `%LOCALAPPDATA%\Microsoft\Edge Dev\User Data`
+  - Edge Canary `%LOCALAPPDATA%\Microsoft\Edge SxS\User Data`
+- **Reveals:** A full second (or third) browsing life that people forget they ran: history, typed URLs, autofill and saved addresses, cookies and live sign-in sessions, bookmarks, downloads list, open/recent tabs, and installed extensions that name which web accounts were used. Cleaning only the stable browser leaves these untouched.
+- **Remove (user runs):** In each channel: sign out of the browser's Google/Microsoft profile, then uninstall it from Settings > Apps > Installed apps, then delete any leftover `...\User Data` folder listed above.
+- **Survives:** Anything synced to the Google or Microsoft account is still in the cloud and re-downloads on next sign-in; server-side logins stay valid until revoked; deleted files persist as recoverable remnants on SSD/HDD until overwritten, and you must empty the Recycle Bin.
+- **Admin:** no.
+
+### Ungoogled Chromium
+- **Where:** `%LOCALAPPDATA%\Chromium\User Data` (uses the plain "Chromium" vendor folder, not a branded one).
+- **Reveals:** Standard Chromium profile contents - history, autofill, cookies/sessions, bookmarks, downloads, open tabs, extensions. Because it sits under the generic `Chromium` folder it is easy to miss, and it collides with any vanilla Chromium build on the same account.
+- **Remove (user runs):** Uninstall or remove the Ungoogled Chromium build, then delete `%LOCALAPPDATA%\Chromium\User Data`. Confirm no other Chromium-based build you want to keep shares that folder first.
+- **Survives:** Ungoogled Chromium has no first-party sync, so there is usually no cloud copy - but any site you stayed logged into keeps a valid server session, and on-disk data is recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Thorium
+- **Where:** `%LOCALAPPDATA%\Thorium\User Data`.
+- **Reveals:** Browsing and download history, autofill and addresses, cookies and active sign-in sessions, bookmarks, typed URLs, open/recent tabs, and installed extensions that hint at which accounts were used.
+- **Remove (user runs):** Uninstall Thorium from Settings > Apps, then delete the leftover `%LOCALAPPDATA%\Thorium\User Data` folder.
+- **Survives:** If you enabled any Google sign-in/sync in Thorium, that data is still in the cloud; server sessions stay valid until revoked; deleted on-disk data is recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Cent Browser
+- **Where:** `%APPDATA%\CentBrowser\User Data` for installed builds (Cent defaults to Roaming AppData). Portable builds keep the profile beside the executable instead.
+- **Reveals:** History, autofill/addresses, cookies and live sessions, bookmarks, downloads, open tabs, and Cent's own extras (saved tab-group sessions, mouse-gesture and super-drag configs can reference recent sites).
+- **Remove (user runs):** Uninstall from Settings > Apps, then delete `%APPDATA%\CentBrowser\User Data`. For a portable copy, delete the whole Cent folder you unzipped.
+- **Survives:** Any site session stays valid server-side until you log out there; deleted on-disk data is recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### SRWare Iron
+- **Where:** Chromium-based privacy fork. On the builds I can confirm it stores its profile under the generic `%LOCALAPPDATA%\Chromium\User Data` folder - the same path used by vanilla and Ungoogled Chromium. The exact folder has varied between versions (see uncertainties).
+- **Reveals:** History, autofill, cookies/sessions, bookmarks, downloads, open tabs, extensions. Shares its folder with other Chromium builds, so it is both easy to overlook and easy to confuse with another browser's data.
+- **Remove (user runs):** Uninstall SRWare Iron, then check which build owns `%LOCALAPPDATA%\Chromium\User Data` and delete it only if no Chromium build you want to keep uses it.
+- **Survives:** Iron has no first-party sync, so typically no cloud copy; site sessions stay valid server-side until logout; on-disk remnants recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Comodo Dragon and IceDragon
+- **Where:**
+  - Dragon (Chromium-based) `%LOCALAPPDATA%\Comodo\Dragon\User Data`
+  - IceDragon (Firefox-based) profile `%APPDATA%\Comodo\IceDragon\Profiles\<random>.default`, cache `%LOCALAPPDATA%\Comodo\IceDragon\Profiles\<random>.default`
+- **Reveals:** Dragon exposes the usual Chromium set (history, autofill, cookies/sessions, bookmarks, downloads, extensions). IceDragon (a Firefox fork) exposes places.sqlite history and bookmarks, cookies.sqlite sessions, formhistory, saved logins, and cache.
+- **Remove (user runs):** Uninstall each from Settings > Apps, then delete the `Comodo\Dragon` and `Comodo\IceDragon` folders under both `%LOCALAPPDATA%` and `%APPDATA%`.
+- **Survives:** Any site you stayed signed into keeps a valid server session; deleted on-disk data is recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Epic Privacy Browser
+- **Where:** `%LOCALAPPDATA%\Epic Privacy Browser\User Data`.
+- **Reveals:** Despite the name, the local profile still records browsing history, autofill, cookies and live sessions, bookmarks, downloads and extensions for this Windows account - Epic's privacy claims are about blocking trackers, not about leaving no local trace for the next owner.
+- **Remove (user runs):** Uninstall from Settings > Apps, then delete `%LOCALAPPDATA%\Epic Privacy Browser\User Data`.
+- **Survives:** Site sessions stay valid server-side until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Avast Secure Browser
+- **Where:** `%LOCALAPPDATA%\AVAST Software\Browser\User Data`.
+- **Reveals:** History, autofill/addresses, cookies and active sessions, bookmarks, downloads, open tabs, and extensions - a full browsing record often installed as a bundle alongside Avast antivirus and then ignored.
+- **Remove (user runs):** Uninstall "Avast Secure Browser" from Settings > Apps, then delete the leftover `%LOCALAPPDATA%\AVAST Software\Browser\User Data` folder.
+- **Survives:** If any Avast account sign-in/sync was enabled, a cloud copy remains; site sessions stay valid server-side; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### AVG Secure Browser
+- **Where:** `%LOCALAPPDATA%\AVG\Browser\User Data`.
+- **Reveals:** Same Chromium profile set as Avast's (shared codebase): history, autofill, cookies/sessions, bookmarks, downloads, open tabs, extensions. Frequently bundled with AVG antivirus.
+- **Remove (user runs):** Uninstall "AVG Secure Browser" from Settings > Apps, then delete `%LOCALAPPDATA%\AVG\Browser\User Data`.
+- **Survives:** Any account sync copy remains in the cloud; server sessions stay valid until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Naver Whale
+- **Where:** `%LOCALAPPDATA%\Naver\Naver Whale\User Data`.
+- **Reveals:** History, autofill/addresses, cookies and live sessions, bookmarks, downloads, open tabs, extensions, plus Whale's sidebar/space features that can hold site logins and notes.
+- **Remove (user runs):** Sign out of your Naver account in Whale, uninstall from Settings > Apps, then delete `%LOCALAPPDATA%\Naver\Naver Whale\User Data`.
+- **Survives:** Anything synced to the Naver account stays in the cloud and re-downloads on sign-in; server sessions stay valid until revoked; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### 360 Browser
+- **Where:** Chinese Chromium-based family. Common paths are `%APPDATA%\360se6\User Data` (360 Secure Browser v6+) and `%LOCALAPPDATA%\360Chrome\Chrome\User Data` (360 Extreme Explorer / Chrome). The exact folder varies by product and version (see uncertainties).
+- **Reveals:** History, autofill, cookies and live sessions, bookmarks, downloads, open tabs, extensions, and any saved sign-ins to the 360 account.
+- **Remove (user runs):** Sign out of the 360 account in the browser, uninstall from Settings > Apps, then delete the `360se6` / `360Chrome` folder under `%APPDATA%` and `%LOCALAPPDATA%`.
+- **Survives:** Data synced to the 360 cloud account remains server-side; site sessions stay valid until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### CocCoc Browser
+- **Where:** `%LOCALAPPDATA%\CocCoc\Browser\User Data`.
+- **Reveals:** History, autofill/addresses, cookies and active sessions, bookmarks, downloads (CocCoc has a built-in download manager whose list is telling), open tabs, and extensions.
+- **Remove (user runs):** Sign out of any CocCoc sync, uninstall from Settings > Apps, then delete `%LOCALAPPDATA%\CocCoc\Browser\User Data`.
+- **Survives:** Synced data stays in the CocCoc account cloud; site sessions valid until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Falkon
+- **Where:** `%APPDATA%\falkon\profiles\<profile>` (default profile holds browsedata.db for history/bookmarks, cookies, and cache).
+- **Reveals:** Browsing history, bookmarks, cookies and sessions, form autofill, and any saved passwords stored by the AutoFill plugin.
+- **Remove (user runs):** Close Falkon, uninstall it, then delete `%APPDATA%\falkon`.
+- **Survives:** Falkon has no cloud sync, so no server copy of the profile - but site logins stay valid server-side until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Midori
+- **Where:** `%APPDATA%\Midori` (current Midori builds are Electron-based and store the profile, history, cookies and cache here).
+- **Reveals:** History, cookies and sessions, bookmarks, downloads, and form data for this Windows account.
+- **Remove (user runs):** Uninstall Midori from Settings > Apps, then delete `%APPDATA%\Midori`.
+- **Survives:** No first-party sync in typical builds; site sessions stay valid server-side until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### qutebrowser
+- **Where:** config `%APPDATA%\qutebrowser\config`, data `%LOCALAPPDATA%\qutebrowser\data` (history.sqlite, cookies, sessions), cache `%LOCALAPPDATA%\qutebrowser\cache`.
+- **Reveals:** Full visited-URL history (history.sqlite), cookies and logged-in sessions, quickmarks/bookmarks, saved session files listing open tabs, and the config which can reference accounts and search engines.
+- **Remove (user runs):** Close qutebrowser, uninstall it, then delete both `%APPDATA%\qutebrowser` and `%LOCALAPPDATA%\qutebrowser`.
+- **Survives:** No cloud sync; site sessions stay valid server-side until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Min
+- **Where:** `%APPDATA%\Min` (Electron app; holds history, bookmarks, tasks/tab groups, and site data).
+- **Reveals:** Browsing history and full-text page index, saved tasks/tab groups that list visited sites, bookmarks, and cookies/sessions.
+- **Remove (user runs):** Uninstall Min from Settings > Apps, then delete `%APPDATA%\Min`.
+- **Survives:** No first-party sync; site sessions stay valid server-side until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Opera Crypto Browser
+- **Where:** profile `%APPDATA%\Opera Software\Opera Crypto`, cache `%LOCALAPPDATA%\Opera Software\Opera Crypto`. (Opera One uses the existing `Opera Software\Opera Stable` folder already listed under browsers, not a new one.)
+- **Reveals:** History, autofill, cookies and sessions, bookmarks, downloads, open tabs, extensions, plus the built-in crypto wallet's references to connected wallet addresses and dapp sites visited.
+- **Remove (user runs):** Sign out of the Opera account and the built-in wallet, uninstall from Settings > Apps, then delete the `Opera Software\Opera Crypto` folders under both `%APPDATA%` and `%LOCALAPPDATA%`.
+- **Survives:** Data synced to the Opera account stays in the cloud; on-chain wallet activity is public and permanent regardless of local deletion; site sessions valid until logout; on-disk data recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Skype for Business (Lync)
+- **Where:** `%LOCALAPPDATA%\Microsoft\Office\16.0\Lync\sip_<your-address>` (the folder is still named "Lync"; 15.0 for the 2013 client). Holds the cached address book (galcontacts.db), presence/contact cache, and local conversation-history cache.
+- **Reveals:** Your organization's contact list and the previous user's SIP/work address, cached colleague details, and fragments of IM conversation history.
+- **Remove (user runs):** Sign out of Skype for Business, then delete the `sip_<address>` folder under `%LOCALAPPDATA%\Microsoft\Office\<version>\Lync`. If the PC is leaving the organization, also remove the Office/work account from Settings > Accounts > Access work or school.
+- **Survives:** The real conversation history lives in the Exchange mailbox (Conversation History folder) and on the server - deleting the local cache does not touch it; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Discord PTB and Canary
+- **Where:** Discord's test builds keep profiles separate from the stable client: PTB `%APPDATA%\discordptb`, Canary `%APPDATA%\discordcanary` (each with Local Storage, IndexedDB, and a Cache of message content and images).
+- **Reveals:** Which Discord account was signed in, cached server/channel names and message text, attachments and images, and a login token in Local Storage that can resume the session. Cleaning only the stable `discord` folder leaves these behind.
+- **Remove (user runs):** Log out in each test client (User Settings > Log Out), fully quit it from the tray, uninstall from Settings > Apps, then delete `%APPDATA%\discordptb` and `%APPDATA%\discordcanary`.
+- **Survives:** All messages live on Discord's servers and remain in your account; changing your Discord password invalidates cached tokens; on-disk cache recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Jami
+- **Where:** `%LOCALAPPDATA%\jami` (account archive, contact list, and local call/message history).
+- **Reveals:** The previous user's Jami account(s) and their cryptographic identity archive, contact list, and locally stored conversation and call history.
+- **Remove (user runs):** In Jami, delete the account (Account settings > Delete account) if you do not want to keep it elsewhere, then uninstall Jami and delete `%LOCALAPPDATA%\jami`.
+- **Survives:** Jami is peer-to-peer/distributed, so messages already delivered sit on your other linked devices; the account identity exists wherever else you imported it; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### qTox (Tox)
+- **Where:** `%APPDATA%\tox` (profile `<name>.tox` holding your Tox ID, private key and contacts; settings.ini; optional history.db and avatars).
+- **Reveals:** The previous user's Tox ID and friend list, saved avatars, and - if history was enabled - stored chat logs. The `.tox` profile is the account's private key.
+- **Remove (user runs):** Close qTox, uninstall it, then delete `%APPDATA%\tox` (this removes the profile/private key and any local history).
+- **Survives:** Tox is peer-to-peer with no central server, so there is no server copy to clear - but any messages already received by contacts remain on their devices; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Pidgin
+- **Where:** `%APPDATA%\.purple` (accounts.xml with account names and sometimes plaintext passwords, blist.xml buddy list, and the logs\ folder of chat transcripts).
+- **Reveals:** Every IM/chat account the previous user configured (XMPP, IRC, and others), their full buddy lists, and complete plaintext chat logs per contact.
+- **Remove (user runs):** In Pidgin remove each account (Accounts > Manage Accounts), then uninstall Pidgin and delete `%APPDATA%\.purple` to clear accounts and logs.
+- **Survives:** Messages held by the chat servers/contacts are unaffected; any password stored plaintext here was also usable anywhere until you change it; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Trillian
+- **Where:** `%APPDATA%\Trillian` (per-account profile, contact lists, logs, and cached media).
+- **Reveals:** The messaging accounts the previous user linked, contact lists, and locally stored chat logs and shared files.
+- **Remove (user runs):** Sign out and remove accounts in Trillian, then uninstall it and delete `%APPDATA%\Trillian`.
+- **Survives:** Trillian history synced to the Trillian/Astra account stays in that cloud; messages on each linked service's servers are unaffected; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Miranda NG
+- **Where:** `%APPDATA%\Miranda NG\<profile>\<profile>.dat` for installer builds (a single database file holding accounts, contacts and history). Portable builds keep the profile beside the executable instead.
+- **Reveals:** All configured messaging accounts, contact lists, and the full local message history - everything is in the one `.dat` database.
+- **Remove (user runs):** Close Miranda NG, then delete the profile `.dat` (or the whole `%APPDATA%\Miranda NG` folder), and for a portable copy delete the Miranda folder you unzipped.
+- **Survives:** Messages on each service's servers are unaffected; on-disk remnants recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Jitsi (Desktop and Meet)
+- **Where:** Legacy Jitsi Desktop (SIP/XMPP softphone) `%APPDATA%\Jitsi` (sip-communicator.properties with account details, contactlist, and a history\ folder). Jitsi Meet desktop (Electron video app) `%APPDATA%\Jitsi Meet`.
+- **Reveals:** Jitsi Desktop exposes configured SIP/XMPP accounts, contact list and stored chat history. Jitsi Meet exposes recently joined meeting rooms/URLs and your display name, plus cached settings.
+- **Remove (user runs):** In Jitsi Desktop remove accounts then delete `%APPDATA%\Jitsi`; for Jitsi Meet uninstall it and delete `%APPDATA%\Jitsi Meet`.
+- **Survives:** Messages/meetings on the servers you used are unaffected; on-disk remnants recoverable until overwritten; empty the Recycle Bin.
+- **Admin:** no.
+
+### Gajim
+- **Where:** `%APPDATA%\Gajim` (logs.db chat history, config with account details, and cache).
+- **Reveals:** The XMPP/Jabber account(s) the previous user configured, their roster/contacts, and the full local message archive in logs.db.
+- **Remove (user runs):** In Gajim remove the accounts, then uninstall Gajim and delete `%APPDATA%\Gajim`.
+- **Survives:** Server-side message archives (XMPP MAM) on the account's server are unaffected; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### HexChat
+- **Where:** `%APPDATA%\HexChat` (hexchat.conf and servlist.conf with networks, nicks and sometimes NickServ passwords; the logs\ folder of channel and private-message transcripts).
+- **Reveals:** The IRC networks and nicknames the previous user used, auto-join channels, and complete plaintext logs of channel and private conversations.
+- **Remove (user runs):** Uninstall HexChat, then delete `%APPDATA%\HexChat` to clear the server list, saved nick passwords and all logs.
+- **Survives:** Anything said in channels persists on others' clients and network logs; a saved NickServ password stays usable until changed; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### mIRC
+- **Where:** `%APPDATA%\mIRC` (mirc.ini with servers, nick and identd settings; the logs\ folder; and config files). Portable installs keep these beside the executable.
+- **Reveals:** IRC servers and nicknames used, saved server passwords, and the logs\ folder of channel/query transcripts.
+- **Remove (user runs):** Uninstall mIRC, then delete `%APPDATA%\mIRC` (or the portable mIRC folder) to clear the ini, passwords and logs.
+- **Survives:** Channel activity persists on others' clients; saved server passwords stay usable until changed; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### WeCom / WeChat Work
+- **Where:** `%APPDATA%\Tencent\WXWork` (account and login state, local cache). Received files default to a `WXWork` folder under Documents.
+- **Reveals:** The previous user's work/enterprise WeChat identity and organization, cached contacts and conversation fragments, and any files received into the Documents WXWork folder.
+- **Remove (user runs):** Log out in WeCom, uninstall it, then delete `%APPDATA%\Tencent\WXWork` and the `Documents\WXWork` received-files folder.
+- **Survives:** Messages and files live on Tencent's enterprise servers and remain in the account; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### DingTalk
+- **Where:** `%APPDATA%\DingTalk` (account/login state and local cache; some data is kept in account-id subfolders).
+- **Reveals:** The previous user's DingTalk account and organization, cached contacts and conversation fragments, and cached received files/images.
+- **Remove (user runs):** Log out in DingTalk, uninstall it, then delete `%APPDATA%\DingTalk`.
+- **Survives:** Messages and files are stored on DingTalk/Alibaba servers and remain in the account; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Lark / Feishu
+- **Where:** Electron clients: Lark (international) `%APPDATA%\Lark`, Feishu (China edition, 飞书) `%APPDATA%\Feishu`. Each holds account state, a local message/cache store, and downloaded files.
+- **Reveals:** The previous user's Lark/Feishu account and workspace, cached contacts and chat content, documents and files opened or received, and calendar fragments.
+- **Remove (user runs):** Log out in the app, uninstall it, then delete `%APPDATA%\Lark` and/or `%APPDATA%\Feishu`.
+- **Survives:** Messages, docs and files live on the Lark/Feishu servers and remain in the account; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### KakaoTalk
+- **Where:** `%APPDATA%\Kakao\KakaoTalk` (account/login state and local cache). Received files default to a `KakaoTalk Downloads` folder under Documents.
+- **Reveals:** The previous user's Kakao account, cached contacts/friends and profile images, chat-list fragments, and any files saved to the Documents KakaoTalk Downloads folder.
+- **Remove (user runs):** Log out in KakaoTalk, uninstall it, then delete `%APPDATA%\Kakao\KakaoTalk` and the `Documents\KakaoTalk Downloads` folder.
+- **Survives:** Chat history is held on Kakao's servers and re-syncs on next login; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Zalo
+- **Where:** `%APPDATA%\ZaloPC` (account/login state and local cache). Received files default to a `Zalo Received Files` folder under Documents.
+- **Reveals:** The previous user's Zalo account/phone number, cached contacts, conversation fragments, and received media/files in the Documents folder.
+- **Remove (user runs):** Log out in Zalo, uninstall it, then delete `%APPDATA%\ZaloPC` and the `Documents\Zalo Received Files` folder.
+- **Survives:** Messages and files on Zalo's servers remain in the account; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Caprine
+- **Where:** `%APPDATA%\Caprine` (Electron wrapper for Facebook Messenger; stores the logged-in Facebook session, cookies and cache).
+- **Reveals:** That the previous user was signed into Facebook Messenger here, cached conversation content and images, and a session cookie that can resume the account.
+- **Remove (user runs):** Sign out of Facebook inside Caprine, uninstall it, then delete `%APPDATA%\Caprine`.
+- **Survives:** All Messenger conversations live on Facebook's servers; changing the Facebook password invalidates the cached session; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Ferdi
+- **Where:** `%APPDATA%\Ferdi` (the Ferdi fork keeps its own folder, distinct from the Ferdium/Franz/Rambox folders noted elsewhere). Holds per-service logins, cookies and cache for every messaging service added.
+- **Reveals:** Which messaging/email services the previous user bundled into Ferdi and that they were signed in, plus cached content and session cookies for each.
+- **Remove (user runs):** Sign out of each service inside Ferdi, uninstall Ferdi, then delete `%APPDATA%\Ferdi`.
+- **Survives:** Each bundled service's data stays on its own servers; a Ferdi account (if used) keeps workspace settings in its cloud; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Mailspring
+- **Where:** `%APPDATA%\Mailspring` (config.json with account addresses, edgehill.db, and a local SQLite cache of downloaded mail and contacts).
+- **Reveals:** The email accounts the previous user linked, cached message bodies and attachments, contacts, and signatures.
+- **Remove (user runs):** In Mailspring remove each account (Preferences > Accounts), sign out of the Mailspring ID, then uninstall and delete `%APPDATA%\Mailspring`.
+- **Survives:** Mail stays on the IMAP/provider servers; Mailspring's sync service (Foundry376) may hold account metadata tied to the Mailspring ID until that account is deleted; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Postbox
+- **Where:** `%APPDATA%\Postbox\Profiles\<profile>` (Thunderbird-style profile: local mail stores, address book, saved logins) and cache under `%LOCALAPPDATA%\Postbox\Profiles\<profile>`.
+- **Reveals:** Configured email accounts, locally stored messages and attachments (including any POP mail pulled off the server), address book, and saved passwords.
+- **Remove (user runs):** Close Postbox, uninstall it, then delete `%APPDATA%\Postbox` and `%LOCALAPPDATA%\Postbox`.
+- **Survives:** IMAP mail remains on the provider's servers; POP mail already downloaded exists only locally (back it up first if needed); on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Claws Mail
+- **Where:** On the Windows port, `%APPDATA%\Claws-mail` (accountrc with account details, folderlist, and the Mail\ store in MH format). Some builds use `%USERPROFILE%\.claws-mail` instead (see uncertainties).
+- **Reveals:** Configured email accounts, locally stored messages (MH format, one file per message), address book, and saved passwords if the user stored them.
+- **Remove (user runs):** Close Claws Mail, uninstall it, then delete the `Claws-mail` / `.claws-mail` folder, whichever exists.
+- **Survives:** IMAP mail remains on the server; already-downloaded POP mail exists only locally; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### The Bat!
+- **Where:** `%APPDATA%\The Bat!` by default (per-account folders with .TBB message bases, address book, and account.cfg). Users frequently relocate this mail store to another drive/folder chosen at setup.
+- **Reveals:** Configured accounts, the full local message store (The Bat! stores mail locally by design), address book, and account configuration.
+- **Remove (user runs):** Close The Bat!, uninstall it, then delete `%APPDATA%\The Bat!` - and check for a relocated mail directory if the previous user moved it elsewhere.
+- **Survives:** IMAP copies remain on the server; mail kept only in The Bat!'s local base is lost if deleted (back up first if needed); on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Spark
+- **Where:** `%APPDATA%\Spark Desktop` (Readdle Spark for Windows; account state and a local cache of mail/contacts). The exact folder name is approximate (see uncertainties).
+- **Reveals:** The email accounts the previous user linked, cached message content, contacts, and that they used a Spark account.
+- **Remove (user runs):** Remove accounts and sign out of the Spark account inside the app, uninstall it, then delete the Spark folder under `%APPDATA%`.
+- **Survives:** Spark routes and stores account data through Readdle's cloud servers, so a server-side copy persists until you delete the Spark account; mail stays on the provider servers too; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Canary Mail
+- **Where:** `%APPDATA%\Canary Mail` (account state and local cache for the Windows client). The exact folder name is approximate (see uncertainties).
+- **Reveals:** The email accounts the previous user linked, cached messages and contacts, and any PGP keys/identities if they used Canary's encryption features.
+- **Remove (user runs):** Remove accounts and sign out of any Canary account inside the app, uninstall it, then delete the Canary Mail folder under `%APPDATA%`.
+- **Survives:** Mail remains on the provider servers; if Canary cloud sync was enabled, a server-side copy persists until the Canary account is deleted; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Windows Live Mail (legacy)
+- **Where:** `%LOCALAPPDATA%\Microsoft\Windows Live Mail` (per-account .eml message store, .oeaccount account files, and local folders).
+- **Reveals:** Configured email and newsgroup accounts, and the full local store of messages as individual .eml files - including POP mail that exists only here.
+- **Remove (user runs):** Close Windows Live Mail, uninstall it (part of Windows Essentials), then delete `%LOCALAPPDATA%\Microsoft\Windows Live Mail`.
+- **Survives:** IMAP mail remains on the server; POP mail kept only locally is lost if deleted (back up first if needed); on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Opera Mail
+- **Where:** `%APPDATA%\Opera Mail\Opera Mail` (the standalone mail client split off from old Opera; holds the Mail\ store and index, accounts, and wand.dat saved passwords).
+- **Reveals:** Configured email accounts, the local message store and index, and saved passwords in wand.dat.
+- **Remove (user runs):** Close Opera Mail, uninstall it, then delete `%APPDATA%\Opera Mail`.
+- **Survives:** IMAP mail remains on the server; locally stored mail is lost if deleted (back up first if needed); on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Vivaldi Mail
+- **Where:** Built into the Vivaldi browser, stored inside the profile at `%LOCALAPPDATA%\Vivaldi\User Data\Default\Mail` (local message store), with contacts and feeds alongside in the same Default profile. (The browser's own data is the separately listed "Vivaldi User Data root".)
+- **Reveals:** Configured email accounts and the full local mail store Vivaldi downloads to disk (it keeps all messages locally for search), contacts, and feed subscriptions.
+- **Remove (user runs):** In Vivaldi remove the mail accounts (Settings > Mail), or delete the whole `%LOCALAPPDATA%\Vivaldi\User Data` profile when wiping the browser; deleting the `Default\Mail` folder clears the mail store.
+- **Survives:** IMAP mail remains on the provider servers; anything synced via a Vivaldi account stays in that cloud; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Spike
+- **Where:** `%APPDATA%\Spike` (Electron email client; account state and a local cache of conversations/contacts).
+- **Reveals:** The email accounts the previous user linked, cached conversation content (Spike presents mail as chat), contacts, and that they used a Spike account.
+- **Remove (user runs):** Sign out and remove accounts inside Spike, uninstall it, then delete `%APPDATA%\Spike`.
+- **Survives:** Spike is cloud-backed, so account data and settings persist on Spike's servers until the Spike account is deleted; mail stays on the provider servers; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Sylpheed
+- **Where:** `%APPDATA%\Sylpheed` on the Windows build (accountrc and config, plus a Mailbox\ store in MH format; the mail folder can be set elsewhere at setup).
+- **Reveals:** Configured email accounts, the local MH message store (one file per message), and address book.
+- **Remove (user runs):** Close Sylpheed, uninstall it, then delete `%APPDATA%\Sylpheed` - and check for a relocated mailbox folder if the previous user moved it.
+- **Survives:** IMAP mail remains on the server; locally stored POP mail is lost if deleted (back up first if needed); on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+### Zimbra Desktop
+- **Where:** Legacy/EOL client. Account state is commonly under `%APPDATA%\Zimbra`, but the bulk mail data store is set at install time and often lives in the install directory or a user-chosen data folder (see uncertainties).
+- **Reveals:** Configured email accounts, and a large local store of mail, contacts and calendar synced down for offline use.
+- **Remove (user runs):** Close Zimbra Desktop, uninstall it, then delete `%APPDATA%\Zimbra` and the data/store directory chosen at install.
+- **Survives:** Mail, contacts and calendar remain on the Zimbra/provider server; on-disk remnants recoverable until overwritten.
+- **Admin:** no.
+
+---
+
+## More media, creative, games & built-in apps
+
+Additional media players, creative and production tools, game launchers and emulators, Phone Link, and Windows' own built-in apps.
+
+### mpv
+
+- **Where:** `%APPDATA%\mpv\` (config: `mpv.conf`, `input.conf`) and `%APPDATA%\mpv\watch_later\` (one file per media item, containing the full path and resume position). Portable builds keep a `portable_config\` folder next to `mpv.exe` instead.
+- **Reveals:** which video/audio files you watched and where you paused them (each watch_later file names a media path); any custom config.
+- **Remove (user runs):** delete `%APPDATA%\mpv\watch_later\` to drop resume history, or delete the whole `%APPDATA%\mpv\` folder. mpv has no GUI "clear history" button.
+- **Survives:** the media files themselves. If `save-position-on-quit` was never enabled, watch_later may be empty or small.
+- **Admin:** no.
+
+### Audacious
+
+- **Where:** `%APPDATA%\audacious\` (confirmed on this machine) — `config`, and `playlists\` with `*.audpl` files plus `playlist_state`.
+- **Reveals:** your saved and active playlists, which reference the full paths of your music files, i.e. a map of your audio library.
+- **Remove (user runs):** delete the `%APPDATA%\audacious\` folder, or remove playlists inside Audacious first.
+- **Survives:** the audio files themselves.
+- **Admin:** no.
+
+### SMPlayer
+
+- **Where:** `%APPDATA%\smplayer\smplayer.ini` (recent files under `[recents]`, favorites) and `%APPDATA%\smplayer\file_settings\` (per-file saved playback positions). Portable builds store this beside the executable.
+- **Reveals:** recently played video/audio file paths and where you stopped in each.
+- **Remove (user runs):** in SMPlayer use the recent-files submenu's "Clear" entry, or delete the `%APPDATA%\smplayer\` folder.
+- **Survives:** the media files themselves.
+- **Admin:** no.
+
+### QMPlay2
+
+- **Where:** `%APPDATA%\QMPlay2\` — `QMPlay2.ini` (settings, recently played) and the saved playlist.
+- **Reveals:** recently played media and playlist entries, which reference your media file paths.
+- **Remove (user runs):** clear the recents inside QMPlay2, or delete the `%APPDATA%\QMPlay2\` folder.
+- **Survives:** the media files themselves.
+- **Admin:** no.
+
+### Media Player Classic - Black Edition (MPC-BE)
+
+- **Where:** `HKCU:\Software\MPC-BE\MPC-BE\` (recent-file list and favorites, typically under a `Settings` / `Recent File List` subkey). A portable install writes an `.ini` next to the executable instead.
+- **Reveals:** recently opened video/audio file paths and favorites, plus last-used open/save folders.
+- **Remove (user runs):** View > Options > Player to limit/clear recent files, or delete the `HKCU:\Software\MPC-BE` key (or the portable `.ini`).
+- **Survives:** the media files themselves.
+- **Admin:** no.
+
+### Clementine
+
+- **Where:** `%LOCALAPPDATA%\Clementine\Clementine\` holding `clementine.db` (the music library database) plus caches; application settings are stored separately (registry/INI — see uncertainties).
+- **Reveals:** your whole scanned music library (file paths, tags, ratings, play counts, last-played times), internet-radio stations, and any music-service accounts you linked.
+- **Remove (user runs):** delete the `%LOCALAPPDATA%\Clementine\` folder; there is no one-click wipe inside the app.
+- **Survives:** the music files themselves; any linked service (e.g. Last.fm scrobbles, Spotify) keeps its own server-side record.
+- **Admin:** no.
+
+### Strawberry Music Player
+
+- **Where:** `%LOCALAPPDATA%\Strawberry\Strawberry\` holding `strawberry.db` (library database) plus caches; application settings are stored separately (registry/INI — see uncertainties).
+- **Reveals:** your scanned music library (file paths, tags, ratings, play counts, last-played), and any music-service or scrobbling accounts you linked.
+- **Remove (user runs):** delete the `%LOCALAPPDATA%\Strawberry\` folder.
+- **Survives:** the music files themselves; linked services keep their own server-side history.
+- **Admin:** no.
+
+### Plex Media Server
+
+- **Where:** `%LOCALAPPDATA%\Plex Media Server\` — library database under `Plug-in Support\Databases\com.plexapp.plugins.library.db`, plus `Metadata\`, `Media\` (artwork/thumbnails) and `Cache\`. Also `HKCU:\Software\Plex, Inc.\Plex Media Server`.
+- **Reveals:** the full path of every media file the server indexed, watch history and timestamps, and the Plex account the server is claimed to.
+- **Remove (user runs):** uninstall Plex Media Server, then delete `%LOCALAPPDATA%\Plex Media Server\`; at plex.tv remove this server from your account's devices.
+- **Survives:** your Plex account on plex.tv keeps the record of this server, your watch state and friends until you remove it online; the media files themselves.
+- **Admin:** no for the default per-user install.
+
+### Plex HTPC
+
+- **Where:** `%LOCALAPPDATA%\Plex HTPC\` (client config and cache; exact folder name — see uncertainties).
+- **Reveals:** the Plex account you signed in with and the servers/libraries you connected to.
+- **Remove (user runs):** sign out inside the app, uninstall it, then delete the folder.
+- **Survives:** your Plex account and watch state live on plex.tv, not locally; nothing local is authoritative.
+- **Admin:** no.
+
+### Jellyfin Media Player
+
+- **Where:** `%LOCALAPPDATA%\JellyfinMediaPlayer\` (and in some builds `%APPDATA%\JellyfinMediaPlayer\`) — client settings and session, including the Jellyfin server address and your username.
+- **Reveals:** the Jellyfin server(s) you connected to and the account you used.
+- **Remove (user runs):** sign out in the app, uninstall it, then delete the folder.
+- **Survives:** your account and viewing history live on the Jellyfin server, not on this PC.
+- **Admin:** no.
+
+### Emby Theater
+
+- **Where:** `%APPDATA%\Emby Theater\` (client config/cache; exact folder name — see uncertainties).
+- **Reveals:** the Emby server you connected to and the account you signed in with.
+- **Remove (user runs):** sign out, uninstall, then delete the folder.
+- **Survives:** your account and watch history live on the Emby server, not locally.
+- **Admin:** no.
+
+### GIMP
+
+- **Where:** `%APPDATA%\GIMP\<version>\` (e.g. `2.10\` or `3.0\`) — settings plus the document history (recently opened image paths).
+- **Reveals:** paths of images you recently opened or exported, and last-used folders.
+- **Remove (user runs):** in the File > Open Recent menu choose "Clear Document History", or delete the `%APPDATA%\GIMP\<version>\` folder.
+- **Survives:** your image files; the Windows thumbnail cache is a separate artifact.
+- **Admin:** no.
+
+### Inkscape
+
+- **Where:** `%APPDATA%\inkscape\` — `preferences.xml`, which stores the recent-file list and last-used open/save directories.
+- **Reveals:** paths of SVG/vector files you recently opened or saved.
+- **Remove (user runs):** delete `%APPDATA%\inkscape\preferences.xml` (or the whole folder); Inkscape rebuilds defaults on next launch.
+- **Survives:** your vector files.
+- **Admin:** no.
+
+### Blender
+
+- **Where:** `%APPDATA%\Blender Foundation\Blender\<version>\config\` — `recent-files.txt` (full paths of recently opened `.blend` files), `bookmarks.txt` (saved folders), `userpref.blend`, `startup.blend`.
+- **Reveals:** paths of your recent projects and any folders you bookmarked in the file browser.
+- **Remove (user runs):** File > Defaults, or delete `recent-files.txt` / the `config\` folder.
+- **Survives:** your `.blend` project files and any renders.
+- **Admin:** no.
+
+### Krita
+
+- **Where:** `%APPDATA%\krita\` — the resource folder and `kritarc` config (recent-document list with full paths, recent folders). On some builds `kritarc` lives under `%LOCALAPPDATA%\krita\` instead (see uncertainties).
+- **Reveals:** paths of images/documents you recently opened or saved.
+- **Remove (user runs):** in the File menu clear recent documents, or delete `kritarc` / the `%APPDATA%\krita\` folder.
+- **Survives:** your artwork files.
+- **Admin:** no.
+
+### DaVinci Resolve
+
+- **Where:** `%APPDATA%\Blackmagic Design\DaVinci Resolve\` (preferences, window layouts, logs, gallery stills, caches). The local project "disk database" that holds your projects lives under the Blackmagic Design support folders (default location — see uncertainties).
+- **Reveals:** project names, timelines/edits, and the media file paths each project references; gallery stills and cached media.
+- **Remove (user runs):** in the Project Manager delete projects, then delete `%APPDATA%\Blackmagic Design\DaVinci Resolve\` and the disk-database folder.
+- **Survives:** your source footage and render outputs; any projects you stored in Blackmagic Cloud.
+- **Admin:** no for the user config; removing a shared project database stored under `%PROGRAMDATA%` may need admin.
+
+### Audacity
+
+- **Where:** `%APPDATA%\audacity\` (confirmed on this machine) — `audacity.cfg` with a `[RecentFiles]` list of full paths and last import/export folders, plus auto-save/recovery data for unsaved recordings.
+- **Reveals:** paths of audio files/projects you recently opened, last-used folders, and possibly recoverable unsaved recordings.
+- **Remove (user runs):** delete `%APPDATA%\audacity\audacity.cfg` (or the whole folder); this clears recents and recovery data.
+- **Survives:** your saved audio projects and exported files.
+- **Admin:** no.
+
+### Kdenlive
+
+- **Where:** `%LOCALAPPDATA%\kdenlive\` (cache: proxy clips, audio thumbnails, video thumbnails). The `kdenliverc` config holds the recent-projects list (exact config-file location on Windows — see uncertainties).
+- **Reveals:** cached proxy copies and thumbnails of your footage, plus paths of recent projects.
+- **Remove (user runs):** inside Kdenlive use Settings to clear the cache, or delete the `%LOCALAPPDATA%\kdenlive\` folder and the `kdenliverc` config.
+- **Survives:** your source footage and `.kdenlive` project files.
+- **Admin:** no.
+
+### Shotcut
+
+- **Where:** `%APPDATA%\Meltytech\Shotcut.ini` (recent-file list with full paths, last export folder) and `%APPDATA%\Meltytech\` for related data.
+- **Reveals:** paths of recently opened/saved `.mlt` projects and the media they point to.
+- **Remove (user runs):** clear recents in Shotcut's recent panel, or delete `%APPDATA%\Meltytech\Shotcut.ini`.
+- **Survives:** your project and media files.
+- **Admin:** no.
+
+### HandBrake
+
+- **Where:** `%APPDATA%\HandBrake\` — `settings.json` (last source and destination paths, "when done" options), `presets.json` (custom presets), and `*.log` files.
+- **Reveals:** the last video you loaded and where you saved output, plus any custom presets.
+- **Remove (user runs):** delete the `%APPDATA%\HandBrake\` folder.
+- **Survives:** your source and output video files.
+- **Admin:** no.
+
+### Paint.NET
+
+- **Where:** classic install: settings under `%LOCALAPPDATA%\paint.net\` (and some keys under `HKCU:\Software\paint.net`) including the recent-files list. Microsoft Store build: `%LOCALAPPDATA%\Packages\` in a folder beginning `dotPDNLLC.paintdotnet`. (Exact MRU storage — see uncertainties.)
+- **Reveals:** paths of images you recently opened or saved.
+- **Remove (user runs):** clear the recent list in Paint.NET, or (classic) delete `%LOCALAPPDATA%\paint.net\`; (Store) uninstall via Settings > Apps.
+- **Survives:** your image files.
+- **Admin:** no.
+
+### Clip Studio Paint
+
+- **Where:** `%USERPROFILE%\Documents\CELSYS\` (document catalog/management database and version folders) and `%APPDATA%\CELSYSUserData\` / `%APPDATA%\CELSYS\` (settings).
+- **Reveals:** your artwork catalog, recently opened `.clip` files, and the Clip Studio account if you signed in.
+- **Remove (user runs):** delete the `CELSYS` / `CELSYSUserData` folders; sign out of your Clip Studio account in the app.
+- **Survives:** your `.clip` artwork files; cloud-synced materials and your account on Celsys servers.
+- **Admin:** no.
+
+### Affinity Photo / Designer / Publisher (Serif)
+
+- **Where:** standalone (v2) builds: `%APPDATA%\Affinity\Photo\<version>\`, `%APPDATA%\Affinity\Designer\<version>\`, `%APPDATA%\Affinity\Publisher\<version>\` (settings and recent-documents list). Microsoft Store builds live under `%LOCALAPPDATA%\Packages\` in Serif/Affinity folders.
+- **Reveals:** paths of recently opened/saved `.afphoto`, `.afdesign`, `.afpub` files; the Affinity account used for licensing.
+- **Remove (user runs):** clear the recent list on the app's welcome screen, then delete the relevant `%APPDATA%\Affinity\` folders; (Store) uninstall via Settings > Apps.
+- **Survives:** your document files; your Affinity/Serif account.
+- **Admin:** no.
+
+### FL Studio
+
+- **Where:** `%USERPROFILE%\Documents\Image-Line\FL Studio\` (default Projects/Presets/Data and user settings) and `HKCU:\Software\Image-Line\` (app config and recent files).
+- **Reveals:** paths of your `.flp` projects, recent-project list, and the account/email registered for licensing.
+- **Remove (user runs):** clear the recent list in FL Studio, delete the `Documents\Image-Line\` folder, and sign out of your Image-Line account.
+- **Survives:** your `.flp` projects and rendered audio; your Image-Line account.
+- **Admin:** no.
+
+### Ableton Live
+
+- **Where:** `%APPDATA%\Ableton\Live <version>\Preferences\` (`Preferences.cfg`, recent-set references, `Log.txt`) and `%USERPROFILE%\Documents\Ableton\` (User Library and default Live Set location).
+- **Reveals:** paths of recently opened `.als` Live Sets, your User Library contents, and the authorized account.
+- **Remove (user runs):** delete the `%APPDATA%\Ableton\` preferences folder; deauthorize the computer from your Ableton account.
+- **Survives:** your `.als` projects and recordings; the authorization record on Ableton's servers.
+- **Admin:** no.
+
+### REAPER
+
+- **Where:** `%APPDATA%\REAPER\` — `reaper.ini` (recent-project list with full paths, last render/import folders) and related `reaper-*.ini` files. A portable install keeps these next to `reaper.exe`.
+- **Reveals:** paths of recently opened `.rpp` projects, FX chains, and render destinations.
+- **Remove (user runs):** clear the recent list in the File menu, or delete the `%APPDATA%\REAPER\` folder (or the portable folder).
+- **Survives:** your `.rpp` projects and rendered audio.
+- **Admin:** no.
+
+### Cakewalk (by BandLab)
+
+- **Where:** `%APPDATA%\Cakewalk\Cakewalk Core\` (configuration) and `HKCU:\Software\Cakewalk Music Software\Cakewalk\` (recent-project MRU and settings); default projects in `%USERPROFILE%\Documents\Cakewalk\`.
+- **Reveals:** paths of recently opened `.cwp` projects, your audio-data folder, and the BandLab account if signed in.
+- **Remove (user runs):** clear the recent list, delete the config folder and the `HKCU:\Software\Cakewalk Music Software` key, and sign out of BandLab.
+- **Survives:** your projects and audio data; your BandLab account and any cloud projects.
+- **Admin:** no.
+
+### Calibre
+
+- **Where:** config `%APPDATA%\calibre\` (settings, viewer reading-position state, and the stored library location paths). Library: default `%USERPROFILE%\Calibre Library\` (or a folder you chose) containing `metadata.db` and your book files in author/title subfolders.
+- **Reveals:** every ebook in your library (titles, authors, tags, your own comments), reading progress in the viewer, and configured news sources.
+- **Remove (user runs):** delete the library folder and `%APPDATA%\calibre\`.
+- **Survives:** copies of the ebook files you placed elsewhere; nothing is cloud-synced by default.
+- **Admin:** no.
+
+### Kindle for PC
+
+- **Where:** downloaded books in `%USERPROFILE%\Documents\My Kindle Content\`; account/app data in `%LOCALAPPDATA%\Amazon\Kindle\` (and `%APPDATA%\Amazon\Kindle\` in newer builds) holding the signed-in Amazon account and device registration.
+- **Reveals:** your Amazon account (the device is registered to it), your downloaded book library, and reading data.
+- **Remove (user runs):** in the app deregister this device (account/tools menu), then uninstall and delete the folders.
+- **Survives:** your entire Kindle library, purchases and furthest-read position stay in your Amazon account in the cloud; only local copies are removed.
+- **Admin:** no.
+
+### Adobe Digital Editions
+
+- **Where:** library in `%USERPROFILE%\Documents\My Digital Editions\` (EPUB/PDF files and the library database); activation data in `%LOCALAPPDATA%\Adobe\Digital Editions\` (and `%APPDATA%\Adobe\Digital Editions\`) holding the authorized Adobe ID.
+- **Reveals:** your ebook library and the Adobe ID the app is authorized with.
+- **Remove (user runs):** in ADE press Ctrl+Shift+D (Help > Erase Authorization) to deauthorize, then delete the folders.
+- **Survives:** DRM-protected books stay tied to your Adobe ID server-side; your Adobe account.
+- **Admin:** no.
+
+### Icecream Ebook Reader
+
+- **Where:** `%APPDATA%\Icecream Ebook Reader\` (library database, recently read, bookmarks); some settings may be in `HKCU:\Software\Icecream Apps\`.
+- **Reveals:** your ebook collection, reading progress, and bookmarks.
+- **Remove (user runs):** remove books inside the app, then delete the `%APPDATA%\Icecream Ebook Reader\` folder.
+- **Survives:** the ebook files themselves.
+- **Admin:** no.
+
+### ONLYOFFICE Desktop Editors
+
+- **Where:** `%APPDATA%\ONLYOFFICE\DesktopEditors\` — recent-files list, settings, and a cache of recently opened documents; also records of any cloud portals you connected.
+- **Reveals:** paths of recently opened documents, spreadsheets and presentations, and any connected ONLYOFFICE/Nextcloud portal accounts.
+- **Remove (user runs):** clear the recent list in the app and disconnect cloud accounts, then delete the `%APPDATA%\ONLYOFFICE\` folder.
+- **Survives:** your document files; any connected cloud/portal keeps its own server-side copy.
+- **Admin:** no.
+
+### SoftMaker Office / FreeOffice (TextMaker, PlanMaker, Presentations)
+
+- **Where:** `HKCU:\Software\SoftMaker\` (per-product, version-specific subkeys holding recent-file MRU and settings) and `%APPDATA%\SoftMaker\` (user dictionaries, templates, settings).
+- **Reveals:** paths of recently opened documents, spreadsheets and presentations.
+- **Remove (user runs):** clear recents in each app, then delete the `HKCU:\Software\SoftMaker` MRU and the `%APPDATA%\SoftMaker\` folder.
+- **Survives:** your document files.
+- **Admin:** no.
+
+### AbiWord
+
+- **Where:** `%APPDATA%\AbiSuite\` — `AbiWord.Profile` (recent-file MRU and settings) and an `AbiWord\` folder for templates/dictionaries.
+- **Reveals:** paths of documents you recently opened or saved.
+- **Remove (user runs):** delete `%APPDATA%\AbiSuite\AbiWord.Profile` (or the whole `AbiSuite` folder).
+- **Survives:** your document files.
+- **Admin:** no.
+
+### PDF-XChange Editor
+
+- **Where:** `HKCU:\Software\Tracker Software\PDFXEditor\` (version subkey: recent-file MRU and settings) and `%APPDATA%\Tracker Software\` / `%LOCALAPPDATA%\Tracker Software\` (config and cache).
+- **Reveals:** paths of recently opened PDF files and last-used folders.
+- **Remove (user runs):** clear the recent list in the app, then delete the registry key and the `Tracker Software` folders.
+- **Survives:** your PDF files.
+- **Admin:** no.
+
+### Drawboard PDF
+
+- **Where:** Microsoft Store (UWP) app, under `%LOCALAPPDATA%\Packages\` in a folder beginning `Drawboard` (its `LocalState\` and `Settings\settings.dat` hold recent documents and annotation data). Exact package-family name — see uncertainties.
+- **Reveals:** paths of recently opened PDFs and annotation/markup data.
+- **Remove (user runs):** clear the recent list in the app, or uninstall it via Settings > Apps (which removes the package folder).
+- **Survives:** your PDF files; anything synced to a Drawboard/OneDrive account.
+- **Admin:** no.
+
+### Xodo PDF
+
+- **Where:** Microsoft Store (UWP) app, under `%LOCALAPPDATA%\Packages\` in the Xodo package folder (`LocalState\` holds recent files and connected-account state). Exact package-family name — see uncertainties.
+- **Reveals:** paths of recently opened PDFs and any connected cloud accounts (Xodo Drive, Google Drive, Dropbox).
+- **Remove (user runs):** sign out and clear recents in the app, or uninstall via Settings > Apps.
+- **Survives:** your PDF files; Xodo/Apryse account and any Xodo Drive cloud copies.
+- **Admin:** no.
+
+### itch.io app
+- **Where:** `%APPDATA%\itch` (the `db\butler.db` library and login profile, plus config); app binaries sit in `%LOCALAPPDATA%\itch`. Downloaded games install where the previous user chose, often under `%APPDATA%\itch\apps`.
+- **Reveals:** The signed-in itch.io account, the list of owned and installed indie games, and the folders games were installed to.
+- **Remove (user runs):** In the itch app use the account menu to Log Out, then uninstall via Settings > Apps > Installed apps. Delete the leftover `%APPDATA%\itch` and `%LOCALAPPDATA%\itch` folders afterward.
+- **Survives:** The itch.io account and purchase history live on itch.io's servers. Game folders placed outside these paths are not touched. Deleted files stay recoverable on an SSD until overwritten.
+- **Admin:** no.
+
+### Amazon Games
+- **Where:** `%LOCALAPPDATA%\Amazon Games` (app data, logs, and the signed-in account/session); games install to `C:\Amazon Games` or a folder the user chose.
+- **Reveals:** The Amazon account session and which titles (including Prime Gaming claims) were installed or played.
+- **Remove (user runs):** In the Amazon Games app sign out from the account menu, uninstall via Settings > Apps, then delete the leftover `%LOCALAPPDATA%\Amazon Games` folder and any game install folder.
+- **Survives:** The Amazon account, entitlements, and Prime Gaming history stay on Amazon's servers. Cloud-synced saves are not local to remove. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Rockstar Games Launcher
+- **Where:** `%LOCALAPPDATA%\Rockstar Games\Launcher` (settings and the offline Social Club sign-in cache), `%LOCALAPPDATA%\Rockstar Games\Social Club`, and `%USERPROFILE%\Documents\Rockstar Games` (per-game profiles and settings for GTA V, Red Dead Redemption 2, etc.).
+- **Reveals:** The Rockstar / Social Club account signed in, which Rockstar titles were installed, and local game profile settings.
+- **Remove (user runs):** Open the launcher, sign out of the Social Club account in Settings, uninstall the launcher via Settings > Apps, then delete the leftover `%LOCALAPPDATA%\Rockstar Games` and `Documents\Rockstar Games` folders.
+- **Survives:** The Rockstar account and cloud save slots remain on Rockstar's servers. Saves synced to Social Club cloud are not local. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Paradox Launcher
+- **Where:** `%USERPROFILE%\Documents\Paradox Interactive` (per-game saves, settings, and mods for Stellaris, Crusader Kings III, Europa Universalis IV, Hearts of Iron IV, etc.) and `%LOCALAPPDATA%\Paradox Interactive` (launcher data and the signed-in Paradox account).
+- **Reveals:** The Paradox account, which Paradox titles were played, and all local save games and custom mods.
+- **Remove (user runs):** Sign out of the Paradox account in the launcher, then delete `%USERPROFILE%\Documents\Paradox Interactive` and `%LOCALAPPDATA%\Paradox Interactive`. Uninstall each game through its own store (Steam/Xbox) separately.
+- **Survives:** The Paradox account and any cloud-synced saves stay server-side. Saves also synced through Steam Cloud remain there. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Humble App
+- **Where:** `%APPDATA%\Humble App` (the signed-in Humble account, library, and configuration); games install to a folder the user chose.
+- **Reveals:** The Humble Bundle account signed in, owned and installed titles, and the download/install location.
+- **Remove (user runs):** In the Humble App sign out, uninstall via Settings > Apps, then delete the leftover `%APPDATA%\Humble App` folder plus any game install folder.
+- **Survives:** The Humble account, purchases, and Humble Choice history remain on Humble's servers. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Playnite
+- **Where:** `%APPDATA%\Playnite` (the `library.db` catalog of every game across all linked stores, configuration, the activity/play-time log, and extension data that can hold linked-store credentials or API tokens). A portable install keeps this beside the executable instead.
+- **Reveals:** The complete cross-store game library, play time and last-played dates, and accounts/tokens for the store integrations (Steam, Epic, GOG, Xbox, etc.) the user linked.
+- **Remove (user runs):** Uninstall Playnite via Settings > Apps (or delete the portable folder), then delete `%APPDATA%\Playnite`. Disconnect any linked accounts from each store first if they should stop being accessible.
+- **Survives:** The underlying store accounts and their libraries are unaffected server-side. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Legacy Games Launcher
+- **Where:** `%APPDATA%\legacy-games-launcher` (Electron app data: configuration and the signed-in Legacy Games account/email); games install under `%LOCALAPPDATA%\Legacy Games` or a chosen folder. This launcher is often pre-installed on new OEM PCs.
+- **Reveals:** The Legacy Games account email and the casual-game bundles tied to it. On a pre-installed copy the previous user may still be signed in.
+- **Remove (user runs):** Sign out in the app, uninstall via Settings > Apps, then delete the leftover `%APPDATA%\legacy-games-launcher` folder.
+- **Survives:** The Legacy Games account and entitlements stay on their servers. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Dolphin Emulator (GameCube / Wii)
+- **Where:** `%USERPROFILE%\Documents\Dolphin Emulator` by default (Config, memory cards, save states, and the Wii NAND under `Wii\`); a portable build keeps these beside the executable.
+- **Reveals:** Which games were played, GameCube memory-card and Wii save data, and any Wii user profile / Mii and (for online titles) linked account data in the NAND.
+- **Remove (user runs):** Close Dolphin and delete `%USERPROFILE%\Documents\Dolphin Emulator` (and the portable folder if used). ROM/ISO disc images stored elsewhere must be deleted separately.
+- **Survives:** ROM/ISO files kept in other folders are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### PCSX2 (PlayStation 2)
+- **Where:** `%USERPROFILE%\Documents\PCSX2` by default (`memcards` with PS2 memory-card saves, `sstates` save states, `inis` settings and game list, logs); a portable build keeps these beside the executable.
+- **Reveals:** PS2 memory-card save data and which PS2 titles were played.
+- **Remove (user runs):** Close PCSX2 and delete `%USERPROFILE%\Documents\PCSX2` (and the portable folder if used). ISOs and any BIOS dump stored elsewhere must be deleted separately.
+- **Survives:** ISO files and BIOS dumps kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### DuckStation (PlayStation 1)
+- **Where:** `%USERPROFILE%\Documents\DuckStation` by default (`memcards`, `savestates`, settings, and a cached game list); a portable build keeps these beside the executable.
+- **Reveals:** PS1 memory-card save data and which PS1 titles were played — the game-list cache shows ROM names and paths.
+- **Remove (user runs):** Close DuckStation and delete `%USERPROFILE%\Documents\DuckStation` (and the portable folder if used). ROM images and BIOS files stored elsewhere must be deleted separately.
+- **Survives:** ROM and BIOS files kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Ryujinx (Nintendo Switch)
+- **Where:** `%APPDATA%\Ryujinx` (config, the `bis` save-data store, firmware and keys under `system`, and the games list); a portable build uses a `portable` subfolder beside the executable.
+- **Reveals:** Switch user profiles and save data, which titles were played, and the presence of console keys/firmware (an account identity may be embedded in saves).
+- **Remove (user runs):** Close Ryujinx and delete `%APPDATA%\Ryujinx` (or the portable folder). Game dumps stored elsewhere must be deleted separately.
+- **Survives:** Game dumps kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### yuzu (Nintendo Switch; project discontinued)
+- **Where:** `%APPDATA%\yuzu` (config, `keys`, and `nand` holding user profiles and save data). The project shut down in 2024, but installed data folders remain on disk.
+- **Reveals:** Switch user profiles, save data, and console keys left behind by the previous user.
+- **Remove (user runs):** Delete `%APPDATA%\yuzu` (and `%LOCALAPPDATA%\yuzu` if present). Game dumps stored elsewhere must be deleted separately.
+- **Survives:** Game dumps kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Citra (Nintendo 3DS; project discontinued)
+- **Where:** `%APPDATA%\Citra` (config, `sdmc` holding game save data, and `nand`). The project shut down in 2024, but installed data folders remain on disk.
+- **Reveals:** 3DS save data, Mii/profile data, and which titles were played.
+- **Remove (user runs):** Delete `%APPDATA%\Citra`. ROMs stored elsewhere must be deleted separately.
+- **Survives:** ROM files kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### PPSSPP (PlayStation Portable)
+- **Where:** `%USERPROFILE%\Documents\PPSSPP` for the installer build (the "memstick" folder: `PSP\SAVEDATA` game saves, `PSP\SYSTEM\ppsspp.ini` config and recent-games list, plus save states). The portable/zip build keeps a `memstick` folder beside the executable instead.
+- **Reveals:** PSP game save data and a recent-games list showing ROM names and paths.
+- **Remove (user runs):** Close PPSSPP and delete the memstick folder (`%USERPROFILE%\Documents\PPSSPP` or the one beside the executable). ROMs stored elsewhere must be deleted separately.
+- **Survives:** ROM files kept elsewhere are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Standalone portable emulators (RetroArch, RPCS3, Cemu, Snes9x, Project64, melonDS, mGBA)
+- **Where:** These run "portable" by default — configuration, save files, save states, and playlists live in the folder the previous user extracted the emulator to (anywhere: Desktop, Downloads, a games drive), not in a fixed system path. Notable stores inside that folder: RetroArch `playlists\` (ROM names and full file paths) plus `saves\`/`states\` and a RetroAchievements login; RPCS3 `dev_hdd0\` (PSN account name, game saves, trophies); Cemu `mlc01\` (Wii U save data and account); Snes9x / Project64 / melonDS keep `.srm` saves, state files, and a recent-ROM list. Some builds instead use `%APPDATA%\Cemu` or `%APPDATA%\mGBA`.
+- **Reveals:** ROM libraries (names and paths), save data and save states, and for RetroArch / RPCS3 a signed-in RetroAchievements or PSN account.
+- **Remove (user runs):** Delete the emulator's own folder wherever it was placed. Because the location is user-chosen, also clear the Windows traces that point to it (Recent items, jump lists, File Explorer address history) — these are catalogued separately.
+- **Survives:** ROM dumps stored outside the emulator folder are untouched. RetroAchievements / PSN accounts stay server-side. SSD remnants persist until overwritten. There is no fixed path to scan, so these can only be flagged through the recent-file and jump-list traces unless the user points the tool at the folder.
+- **Admin:** no.
+
+### Phone Link / Your Phone
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.YourPhone_8wekyb3d8bbwe` (LocalCache and Settings holding data mirrored from the linked phone).
+- **Reveals:** Text messages (SMS/MMS), recent photos, call history, contacts, and notifications mirrored from the previous user's phone, plus the Microsoft account the link used.
+- **Remove (user runs):** Unlink the phone first at account.microsoft.com/devices (or Settings > Bluetooth & devices > Mobile devices > Manage), then reset the app via Settings > Apps > Phone Link > Advanced options > Reset. Removing the Microsoft account from Windows (Settings > Accounts) clears the package folder entirely.
+- **Survives:** The messages, photos, and call logs still live on the phone itself and in the user's Microsoft/phone cloud. Resetting the app does not unlink the phone — do that step first. Mirrored data may remain until the account is removed from Windows. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Clipchamp video editor
+- **Where:** `%LOCALAPPDATA%\Packages\Clipchamp.Clipchamp_yxz26nhyzhsrt` (LocalState/LocalCache with project data and cached media, and the signed-in Clipchamp/Microsoft account).
+- **Reveals:** Video projects (their names and references to the personal video/photo footage used), cached media thumbnails, and the signed-in account.
+- **Remove (user runs):** Open Clipchamp, sign out, then reset it via Settings > Apps > Clipchamp > Advanced options > Reset. Exported videos saved to Videos/Downloads must be deleted separately.
+- **Survives:** Projects saved to the Clipchamp/Microsoft cloud remain online. Exported video files in other folders are untouched. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Paint and Paint 3D
+- **Where:** New Windows Paint: `%LOCALAPPDATA%\Packages\Microsoft.Paint_8wekyb3d8bbwe`. Paint 3D (where still installed): `%LOCALAPPDATA%\Packages\Microsoft.MSPaint_8wekyb3d8bbwe`. Classic desktop Paint settings: `HKCU\Software\Microsoft\Windows\CurrentVersion\Applets\Paint`. Recently opened image paths also surface in Recent items / RecentDocs (catalogued separately).
+- **Reveals:** Recently edited image file names and paths, and any Paint 3D project creations and 3D library content.
+- **Remove (user runs):** Reset the app via Settings > Apps > Paint (and Paint 3D) > Advanced options > Reset. Saved images in Pictures/Desktop and the recent-files traces must be cleared separately.
+- **Survives:** The image files themselves, wherever saved, are untouched by a reset. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Calculator history
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.WindowsCalculator_8wekyb3d8bbwe\LocalState` (calculation history and stored memory entries).
+- **Reveals:** Recent calculations and memory values — usually trivial, but can include figures the user worked out (amounts, measurements).
+- **Remove (user runs):** In Calculator open History and select Clear (the trash icon), or reset the app via Settings > Apps > Calculator > Advanced options > Reset.
+- **Survives:** Nothing syncs server-side. SSD remnants of the LocalState file persist until overwritten.
+- **Admin:** no.
+
+### Weather app saved locations
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.BingWeather_8wekyb3d8bbwe\LocalState` (favorite/saved locations, home city, and launch location).
+- **Reveals:** Where the previous user lives and travels — home town, work city, and other saved places.
+- **Remove (user runs):** In the Weather app remove each saved location and clear the launch/home location, or reset the app via Settings > Apps > Weather > Advanced options > Reset.
+- **Survives:** Locations tied to a signed-in Microsoft account may resync from the cloud on next sign-in. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### News app interests and locations
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.BingNews_8wekyb3d8bbwe\LocalState` (followed topics/interests and saved locations).
+- **Reveals:** The previous user's interests and followed topics (which can imply politics, health, or hobbies) and their location preferences.
+- **Remove (user runs):** In the News app clear followed interests, or reset the app via Settings > Apps > Microsoft News > Advanced options > Reset.
+- **Survives:** Interests tied to a Microsoft account resync from the cloud on next sign-in. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Feedback Hub
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.WindowsFeedbackHub_8wekyb3d8bbwe\LocalState` (present only if the app was used), holding draft and submitted feedback and attached diagnostics.
+- **Reveals:** Feedback the user wrote (which can contain personal context), any screenshots or diagnostic logs they attached, and the Microsoft account used to submit.
+- **Remove (user runs):** Reset the app via Settings > Apps > Feedback Hub > Advanced options > Reset.
+- **Survives:** Feedback already submitted stays on Microsoft's servers under the account. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Widgets board (Web Experience)
+- **Where:** `%LOCALAPPDATA%\Packages\MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy` (widget board personalization, pinned widgets, MSN feed personalization, and the signed-in Microsoft account).
+- **Reveals:** The signed-in Microsoft account, the location used by the weather widget, feed interests, and data surfaced by pinned widgets (calendar, To Do, Outlook, sports/finance picks).
+- **Remove (user runs):** Sign out of the Widgets board, then reset via Settings > Apps > Windows Web Experience Pack > Advanced options > Reset where available. Removing the Microsoft account from Windows clears most of it.
+- **Survives:** Personalization tied to the Microsoft account resyncs from the cloud on next sign-in. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+### Clock app (alarms, timers, world clock, focus)
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.WindowsAlarms_8wekyb3d8bbwe\LocalState` (alarms and their labels, timers, saved world-clock cities, and focus-session data).
+- **Reveals:** Alarm labels (which can hint at routines, medication, or appointments), world-clock cities (places or contacts' time zones the user tracks), and focus-session history (which may link a Spotify or To Do account).
+- **Remove (user runs):** Delete each alarm, timer, and world-clock city in the app, or reset it via Settings > Apps > Clock > Advanced options > Reset.
+- **Survives:** Focus data linked to a Microsoft account, and any linked Spotify/To Do connection, stay server-side. SSD remnants persist until overwritten.
+- **Admin:** no.
+
+---
+
+## More developer, cloud & database tools
+
+Additional developer and operations tools that store credentials, tokens or connection details.
+
+### Oracle Cloud Infrastructure (OCI) CLI
+- **Where:** `%USERPROFILE%\.oci\` — the `config` file plus the API signing key files it references (commonly `oci_api_key.pem`).
+- **Reveals:** your tenancy and user OCIDs, home region, key fingerprint, configured profile names, and the paths to (often co-located) private API signing keys that authenticate to your Oracle Cloud account.
+- **Remove (user runs):** delete the `%USERPROFILE%\.oci` folder in File Explorer; then sign in to the OCI Console and delete the matching API key under your user's API Keys.
+- **Survives:** the API key stays valid on Oracle's side until you delete it in the Console. On an SSD the deleted files linger in unallocated space until TRIM/overwrite.
+- **Admin:** no.
+
+### IBM Cloud CLI
+- **Where:** `%USERPROFILE%\.bluemix\` — `config.json` and `plugins\` (some builds use `%USERPROFILE%\.ibmcloud\`).
+- **Reveals:** your IBM Cloud account, email, selected region and resource group, and cached IAM access/refresh tokens from your last login.
+- **Remove (user runs):** run `ibmcloud logout`, then delete the `%USERPROFILE%\.bluemix` folder.
+- **Survives:** server-side sessions last until the token expires; any API keys you created remain valid until you revoke them in IBM Cloud IAM. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Alibaba Cloud CLI (aliyun)
+- **Where:** `%USERPROFILE%\.aliyun\` — chiefly `config.json`.
+- **Reveals:** your Alibaba Cloud AccessKey ID and AccessKey Secret (stored in clear), default region, and profile names.
+- **Remove (user runs):** delete the `%USERPROFILE%\.aliyun` folder; then disable or delete that AccessKey in the Alibaba Cloud RAM console.
+- **Survives:** the AccessKey authenticates to your account until you delete it in RAM. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Linode CLI
+- **Where:** `%USERPROFILE%\.config\linode-cli` (a single config file).
+- **Reveals:** your Linode personal access token (stored in clear), default region/type/image, and the configured username.
+- **Remove (user runs):** delete the `linode-cli` config file; then revoke the token under Linode Cloud Manager > API Tokens.
+- **Survives:** the token keeps working until you revoke it in Linode. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Scaleway CLI (scw)
+- **Where:** `%USERPROFILE%\.config\scw\config.yaml`.
+- **Reveals:** your Scaleway access key and secret key, organization and project IDs, and default region/zone.
+- **Remove (user runs):** delete the `%USERPROFILE%\.config\scw` folder; then delete that API key in the Scaleway console.
+- **Survives:** the API key stays valid until deleted in the console. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Fly.io CLI (flyctl)
+- **Where:** `%APPDATA%\flyctl\config.yml` (older installs used `%USERPROFILE%\.fly\`).
+- **Reveals:** your Fly.io access token and the signed-in account email.
+- **Remove (user runs):** run `fly auth logout`, then delete `%APPDATA%\flyctl`.
+- **Survives:** the token is valid server-side until it expires or you revoke it in your Fly.io account. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Vercel CLI
+- **Where:** a `com.vercel.cli` folder under your AppData — `auth.json` (token) and `config.json`.
+- **Reveals:** your Vercel authentication token and the signed-in account/email, plus recently used scope (team) IDs.
+- **Remove (user runs):** run `vercel logout`, then delete the `com.vercel.cli` folder.
+- **Survives:** the token works until revoked in Vercel account settings. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Netlify CLI
+- **Where:** global login in `%USERPROFILE%\.config\configstore\netlify.json`; a per-project `.netlify\state.json` inside each linked site folder.
+- **Reveals:** your Netlify auth token and user ID (global config), and the site IDs/slugs of projects you linked (per-project state).
+- **Remove (user runs):** run `netlify logout`, delete `%USERPROFILE%\.config\configstore\netlify.json`, and delete the `.netlify` folder in each project; then revoke the token under Netlify User settings > Applications.
+- **Survives:** the token stays valid until revoked in Netlify. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Supabase CLI
+- **Where:** the access token is kept in Windows Credential Manager (a generic credential the CLI creates); a `%USERPROFILE%\.supabase` config/fallback folder may also exist, and linked projects leave a `supabase\.temp\` folder in the project directory.
+- **Reveals:** that you were signed in to Supabase (the stored access token), and the project refs of databases you linked.
+- **Remove (user runs):** run `supabase logout` (clears the Credential Manager entry), delete any `%USERPROFILE%\.supabase` folder and per-project `supabase\.temp`; then revoke the token at supabase.com > Account > Access Tokens.
+- **Survives:** the token works until revoked on Supabase. Project refs are identifiers, not secrets. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### PlanetScale CLI (pscale)
+- **Where:** `%USERPROFILE%\.config\planetscale\` (config and cached OAuth token).
+- **Reveals:** your PlanetScale OAuth/access token, signed-in account, and default organization/database.
+- **Remove (user runs):** run `pscale auth logout`, then delete `%USERPROFILE%\.config\planetscale`.
+- **Survives:** the token is valid server-side until it expires or is revoked in your PlanetScale account. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Fastly CLI
+- **Where:** `%APPDATA%\fastly\config.toml`.
+- **Reveals:** your Fastly API token(s) and profile names, and the associated account/user.
+- **Remove (user runs):** delete `%APPDATA%\fastly`; then revoke the token under Fastly account > Personal API tokens.
+- **Survives:** the token stays valid until revoked in Fastly. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Akamai EdgeGrid credentials (.edgerc)
+- **Where:** `%USERPROFILE%\.edgerc`.
+- **Reveals:** your Akamai API credentials — client token, client secret, access token, and the account host — for each named section.
+- **Remove (user runs):** delete `%USERPROFILE%\.edgerc`; then invalidate those API credentials in Akamai Control Center (Identity & Access).
+- **Survives:** the credentials authenticate to your Akamai account until you revoke them in Control Center. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Heroku CLI
+- **Where:** `%LOCALAPPDATA%\heroku\` (config.json, cache); the API token itself is written to your netrc file (`%USERPROFILE%\_netrc` / `.netrc`).
+- **Reveals:** the Heroku folder shows your account email and cached app/analytics data; the netrc entry holds the API token that logs in to your Heroku account.
+- **Remove (user runs):** run `heroku logout` (clears the netrc entry), then delete `%LOCALAPPDATA%\heroku`.
+- **Survives:** the token works until it expires or you regenerate it in Heroku account settings. The netrc file itself is shared with other tools (see the netrc entry). SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### rclone
+- **Where:** `%APPDATA%\rclone\rclone.conf`.
+- **Reveals:** every cloud remote you configured, in one file — provider type, account identifiers, bucket/drive names, and saved tokens or passwords (obscured but reversible) for services like Google Drive, Dropbox, S3, OneDrive and many more.
+- **Remove (user runs):** delete `%APPDATA%\rclone\rclone.conf` (or run `rclone config delete` per remote); then, for OAuth remotes, revoke rclone's access in each provider's connected-apps settings.
+- **Survives:** stored tokens keep working until revoked at each provider. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### GitHub Desktop
+- **Where:** `%APPDATA%\GitHub Desktop\` (config, logs, recent repositories); the GitHub access token is kept in Windows Credential Manager.
+- **Reveals:** your signed-in GitHub account and email, the list and local paths of repositories you opened, and your recent commit author identity.
+- **Remove (user runs):** in GitHub Desktop sign out (File > Options > Accounts), then delete `%APPDATA%\GitHub Desktop`; remove the GitHub entry from Windows Credential Manager if it remains.
+- **Survives:** the OAuth token works until revoked under GitHub > Settings > Applications. Cloned repositories stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### GitKraken
+- **Where:** `%APPDATA%\.gitkraken\` (config, profiles, logs).
+- **Reveals:** your GitKraken account, the linked GitHub/GitLab/Bitbucket integrations, your Git author identity, and the list and paths of repositories you opened.
+- **Remove (user runs):** sign out in GitKraken (Preferences > Authentication), then delete `%APPDATA%\.gitkraken`; revoke the GitKraken integration in each hosting provider's settings.
+- **Survives:** hosting-provider tokens work until revoked there. Cloned repos stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Sourcetree
+- **Where:** `%LOCALAPPDATA%\Atlassian\SourceTree\` (accounts.json, bookmarks.xml) and `%APPDATA%\Atlassian\SourceTree\`.
+- **Reveals:** your configured hosting accounts (Bitbucket/GitHub/GitLab) and usernames, and the names and local paths of bookmarked repositories.
+- **Remove (user runs):** remove accounts in Sourcetree (Tools > Options > Authentication), then delete the `Atlassian\SourceTree` folders under both `%LOCALAPPDATA%` and `%APPDATA%`; clear any Sourcetree entries from Windows Credential Manager.
+- **Survives:** saved OAuth/app passwords work until revoked at the hosting provider. Cloned repos stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Fork (Git client)
+- **Where:** `%APPDATA%\Fork\` (settings and repository list).
+- **Reveals:** the repositories you opened and their local paths, your configured hosting accounts, and your Git author identity.
+- **Remove (user runs):** sign out of accounts in Fork, then delete `%APPDATA%\Fork`; revoke any hosting tokens in the provider's settings.
+- **Survives:** hosting tokens work until revoked. Cloned repos stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Tower (Git client)
+- **Where:** a `Tower` folder under `%APPDATA%` (services/accounts, repository bookmarks, recent list).
+- **Reveals:** your configured hosting accounts and usernames, and the names and local paths of repositories you worked with.
+- **Remove (user runs):** remove accounts in Tower's preferences, then delete the Tower folder under `%APPDATA%`; clear related Windows Credential Manager entries and revoke hosting tokens.
+- **Survives:** hosting tokens work until revoked. Cloned repos stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Sublime Merge
+- **Where:** `%APPDATA%\Sublime Merge\` (notably `Local\Session.sublime_session` and `Packages\User\`).
+- **Reveals:** the repositories you opened and their local paths, your recent window layout, and your Git author identity; credential helpers it used may have cached tokens in Windows Credential Manager.
+- **Remove (user runs):** delete `%APPDATA%\Sublime Merge`; clear any Git credential entries from Windows Credential Manager.
+- **Survives:** cached Git tokens work until revoked at the hosting provider. Cloned repos stay on disk. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### GitLab CLI (glab)
+- **Where:** `%APPDATA%\glab-cli\config.yml` (some setups use `%USERPROFILE%\.config\glab-cli\config.yml`).
+- **Reveals:** your GitLab host(s), the access token (stored in the config unless a credential helper/keyring is used), and the default/preferred GitLab account.
+- **Remove (user runs):** run `glab auth logout`, then delete the `glab-cli` config folder; revoke the token under GitLab > Preferences > Access Tokens.
+- **Survives:** the token works until revoked in GitLab. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Bitvise SSH Client
+- **Where:** settings and the known-host-key database in the registry under `HKCU:\Software\Bitvise`; saved profile files (`*.bscp` / `*.tlp`) wherever you exported them (often Documents).
+- **Reveals:** SSH servers you connected to (host, port, username), your authentication method, references to client key files, and the trusted host-key record of each server.
+- **Remove (user runs):** in Bitvise clear the host-key database and saved profiles, then delete the `HKCU:\Software\Bitvise` key and any exported `.bscp`/`.tlp` files; delete your SSH private key files separately if stored locally.
+- **Survives:** the remote servers and any keys you authorized there are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Xshell (NetSarang)
+- **Where:** session files under `%USERPROFILE%\Documents\NetSarang Computer\<version>\Xshell\Sessions\*.xsh` (older builds: `%APPDATA%\NetSarang\Xshell\Sessions\`).
+- **Reveals:** each saved session's host, port and username, and — if you chose to save it — an encrypted password; plus your connection history.
+- **Remove (user runs):** delete the `Sessions` folder (and the parent `NetSarang Computer` / `%APPDATA%\NetSarang` folder) and clear Xshell's recent-session list.
+- **Survives:** the remote hosts and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### ZOC Terminal
+- **Where:** host-directory and settings files under `%USERPROFILE%\Documents\ZOC8 Files\` (or an `%APPDATA%\ZOC8` settings folder).
+- **Reveals:** the hosts you saved (name, address, port, username) and connection options; saved passwords are stored encrypted if you enabled that.
+- **Remove (user runs):** delete the ZOC host directory and settings files, and clear the recent-connections list in ZOC.
+- **Survives:** the remote hosts and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Devolutions Remote Desktop Manager
+- **Where:** `%LOCALAPPDATA%\Devolutions\RemoteDesktopManager\` and `%APPDATA%\Devolutions\` (settings, cache, and any local data source file).
+- **Reveals:** saved RDP/SSH/VNC/web sessions — hostnames, usernames, and (for a local data source) encrypted credentials — plus your connection history and any configured remote data sources.
+- **Remove (user runs):** in RDM remove local data sources and saved sessions, then delete the `Devolutions` folders under `%LOCALAPPDATA%` and `%APPDATA%`; sign out of any online/shared data source.
+- **Survives:** sessions and credentials held in an online/shared data source live on the server, not this PC. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### MongoDB Compass
+- **Where:** `%APPDATA%\MongoDB Compass\` (saved/favorite connections and recents; connection secrets are stored via the OS credential vault).
+- **Reveals:** the MongoDB servers and clusters you connected to — hostnames, ports, usernames, database names — and your connection history.
+- **Remove (user runs):** in Compass delete the saved connections, then delete `%APPDATA%\MongoDB Compass`; clear related entries from Windows Credential Manager.
+- **Survives:** the remote databases and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### RedisInsight
+- **Where:** `%APPDATA%\RedisInsight-v2\` (older editions: `%USERPROFILE%\.redisinsight`) — a local database of saved connections.
+- **Reveals:** your Redis endpoints (host, port, username), stored connection passwords (encrypted locally), and command/workbench history.
+- **Remove (user runs):** in RedisInsight delete the database connections, then delete the `RedisInsight-v2` (or `.redisinsight`) folder.
+- **Survives:** the remote Redis instances and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### TablePlus
+- **Where:** a `TablePlus` folder under `%APPDATA%` (saved connection groups and recents); connection passwords are stored via the OS credential vault.
+- **Reveals:** the databases you connected to — type, host, port, username, database name — and recent queries.
+- **Remove (user runs):** in TablePlus delete the saved connections, then delete the `TablePlus` folder under `%APPDATA%`; clear related Windows Credential Manager entries.
+- **Survives:** the remote databases and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Navicat
+- **Where:** connection definitions in the registry under `HKCU:\Software\PremiumSoft\` (e.g. `Navicat\Servers`), plus a `%APPDATA%\PremiumSoft\` data folder.
+- **Reveals:** each saved database server — host, port, username, database — and its saved password (stored encrypted), along with your query/history files.
+- **Remove (user runs):** in Navicat delete the saved connections, then delete the `HKCU:\Software\PremiumSoft` key and the `%APPDATA%\PremiumSoft` folder.
+- **Survives:** the remote databases and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Azure Data Studio
+- **Where:** `%APPDATA%\azuredatastudio\` (User\settings.json, connection profiles, history) and `%USERPROFILE%\.azuredatastudio\extensions`; connection secrets use the OS credential vault.
+- **Reveals:** the SQL Server/Azure SQL/PostgreSQL servers you connected to — server names, logins, database names — your recently opened files, and any signed-in Azure account.
+- **Remove (user runs):** in Azure Data Studio delete saved connections and sign out of Azure, then delete `%APPDATA%\azuredatastudio` and `%USERPROFILE%\.azuredatastudio`; clear related Windows Credential Manager entries.
+- **Survives:** the remote databases and Azure account are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Beekeeper Studio
+- **Where:** `%APPDATA%\beekeeper-studio\` — a local SQLite database of saved connections and query history.
+- **Reveals:** the databases you connected to — type, host, port, username, database name — stored connection passwords (encrypted locally), and saved/recent queries.
+- **Remove (user runs):** in Beekeeper Studio delete the saved connections, then delete the `beekeeper-studio` folder under `%APPDATA%`.
+- **Survives:** the remote databases and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### DbVisualizer
+- **Where:** `%USERPROFILE%\.dbvis\` (notably the `config*/dbvis.xml` settings file).
+- **Reveals:** your saved database connections — driver, host, port, username, database — and connection passwords (saved encrypted; recoverable unless you set a master password).
+- **Remove (user runs):** in DbVisualizer delete the connections, then delete the `%USERPROFILE%\.dbvis` folder.
+- **Survives:** the remote databases and accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Visual Studio
+- **Where:** `%LOCALAPPDATA%\Microsoft\VisualStudio\<version>\` (settings and the `privateregistry.bin` hive holding the recent-projects MRU), the signed-in account cache at `%LOCALAPPDATA%\.IdentityService\`, and your `%USERPROFILE%\Documents\Visual Studio <year>\` projects folder.
+- **Reveals:** recently opened solutions and their paths, your signed-in Microsoft/Azure DevOps account and cached tokens, configured NuGet sources, and connected-service settings.
+- **Remove (user runs):** in Visual Studio sign out (top-right account menu) and clear the recent list, then delete the version folder under `%LOCALAPPDATA%\Microsoft\VisualStudio` and the `%LOCALAPPDATA%\.IdentityService` folder; move your actual project files separately.
+- **Survives:** the signed-in cloud account and Azure DevOps access are untouched until you sign out/revoke. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Android Studio
+- **Where:** `%APPDATA%\Google\AndroidStudio<version>\` (settings, recent projects), `%LOCALAPPDATA%\Google\AndroidStudio<version>\` (caches, logs), and `%USERPROFILE%\.android\` (AVD emulator images, `adbkey`, debug keystore).
+- **Reveals:** recently opened projects and their paths, SDK locations, signed-in accounts for IDE plugins, and — in `.android` — emulator data and your debug signing key.
+- **Remove (user runs):** in Android Studio clear the recent-projects list and sign out of plugin accounts, then delete the `Google\AndroidStudio*` folders under `%APPDATA%` and `%LOCALAPPDATA%` and the `%USERPROFILE%\.android` folder; move real project files separately.
+- **Survives:** any cloud accounts signed into plugins are untouched until you sign out. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Eclipse IDE
+- **Where:** the workspace `.metadata\` under your workspace (default `%USERPROFILE%\eclipse-workspace\`), and the Equinox secure storage at `%USERPROFILE%\.eclipse\org.eclipse.equinox.security\secure_storage`.
+- **Reveals:** recently opened projects and files, your workspace location, and — in secure storage — saved passwords for Git repositories, servers and other plug-ins (encrypted).
+- **Remove (user runs):** delete the secure storage file (or clear it via Window > Preferences > General > Security > Secure Storage > Delete), then delete the `.metadata` folder and `%USERPROFILE%\.eclipse`; move real project files separately.
+- **Survives:** the remote repositories/servers and their accounts are untouched. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Sublime Text
+- **Where:** `%APPDATA%\Sublime Text\` (v4; older: `Sublime Text 3`) — notably `Local\Session.sublime_session` and `Packages\User\`.
+- **Reveals:** your recently opened files, folders and projects (paths can expose personal document and project names), open workspaces, and the contents of unsaved ("hot exit") buffers.
+- **Remove (user runs):** delete the `%APPDATA%\Sublime Text` folder (or at least `Local\Session.sublime_session` and the `Packages\User` autosave/session files).
+- **Survives:** nothing remote — this is local editor state. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Cursor
+- **Where:** `%APPDATA%\Cursor\` (User\settings.json, `workspaceStorage`, `History`, logs) and `%USERPROFILE%\.cursor\extensions`.
+- **Reveals:** recently opened folders/workspaces and their paths, your signed-in Cursor account, local AI chat/prompt history, and tokens cached by installed extensions.
+- **Remove (user runs):** in Cursor sign out and clear recents, then delete `%APPDATA%\Cursor` and `%USERPROFILE%\.cursor`; clear related Windows Credential Manager entries.
+- **Survives:** the Cursor account and any extension cloud sessions are untouched until signed out/revoked. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### VSCodium
+- **Where:** `%APPDATA%\VSCodium\` (User\settings.json, `workspaceStorage`, `History`) and `%USERPROFILE%\.vscode-oss\extensions`.
+- **Reveals:** recently opened folders/workspaces and their paths, editor settings, installed extensions, and any tokens those extensions cached.
+- **Remove (user runs):** clear recents and sign out of extensions, then delete `%APPDATA%\VSCodium` and `%USERPROFILE%\.vscode-oss`; clear related Windows Credential Manager entries.
+- **Survives:** any extension cloud sessions are untouched until revoked. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Cargo (Rust) credentials
+- **Where:** `%USERPROFILE%\.cargo\credentials.toml` (older: `%USERPROFILE%\.cargo\credentials`).
+- **Reveals:** your crates.io API token, and tokens for any alternate/private registries you configured.
+- **Remove (user runs):** run `cargo logout` (and `cargo logout --registry <name>` for others), or delete the file; then revoke the token on crates.io > Account.
+- **Survives:** the token stays valid until revoked on crates.io. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Composer (PHP) auth
+- **Where:** `%APPDATA%\Composer\auth.json`.
+- **Reveals:** credentials for private Composer/Packagist repositories — HTTP basic auth usernames/passwords and GitHub/GitLab/Bitbucket OAuth tokens — stored in clear.
+- **Remove (user runs):** delete `%APPDATA%\Composer\auth.json` (or unset entries with `composer config --global --unset`); then revoke the affected tokens at each provider.
+- **Survives:** the tokens work until revoked at the provider. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### Gradle properties
+- **Where:** `%USERPROFILE%\.gradle\gradle.properties` (and the `%USERPROFILE%\.gradle\caches` tree).
+- **Reveals:** repository and publishing credentials people commonly store here in clear — artifact-repo usernames/passwords, signing-key passwords, and API keys referenced by builds.
+- **Remove (user runs):** edit or delete `%USERPROFILE%\.gradle\gradle.properties`; then rotate any credentials it exposed at their source.
+- **Survives:** the credentials stay valid until you rotate them. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+### conda configuration
+- **Where:** `%USERPROFILE%\.condarc`, the `%USERPROFILE%\.conda\` folder, and the Anaconda.org token store `%USERPROFILE%\.continuum\anaconda-client\tokens\`.
+- **Reveals:** your configured channels (which can expose private or enterprise repository URLs), any tokens embedded in channel URLs, proxy settings that may include credentials, and saved Anaconda.org API tokens.
+- **Remove (user runs):** edit/delete `.condarc` (or use `conda config --remove`), run `anaconda logout`, and delete the `.conda` and `.continuum` folders; then revoke the token in your Anaconda.org account.
+- **Survives:** tokens work until revoked at Anaconda.org. SSD remnants persist until overwrite.
+- **Admin:** no.
+
+---
+
+## More password managers, wallets, cloud & VPN
+
+Additional password managers, cryptocurrency wallets and authenticators, cloud-sync providers and VPN clients.
+
+### Keeper Password Manager (desktop cache)
+- **Where:** `%APPDATA%\Keeper Password Manager\` holds the Electron desktop app's data — a local encrypted cache of the vault, `config`/settings, and logs; the program itself installs under `%LOCALAPPDATA%\Programs\KeeperPasswordManager`. Some builds use a plain `%APPDATA%\Keeper` folder name instead.
+- **Reveals:** That the previous owner used Keeper, the account email / sign-in shown in settings, and an encrypted local copy of the vault (logins, secure notes, payment cards, files). Vault contents are end-to-end encrypted, but the account email and the existence of a vault are exposed, and a saved "stay logged in" / biometric unlock can let the vault open on this device.
+- **Remove (user runs):** In the app choose **Logout** (this clears the local cache and any device unlock), uninstall via Settings > Apps > Installed apps, then in File Explorer delete the leftover `%APPDATA%\Keeper Password Manager` folder and empty the Recycle Bin. Remove this device under your Keeper account's security settings.
+- **Survives:** Your Keeper **vault lives on Keeper's servers** and is untouched by local removal (intended — it is your vault); it persists until you change the master password or close the account. SSD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Sticky Password (local database)
+- **Where:** `%APPDATA%\Sticky Password\` holds the app's settings and local encrypted database; the program installs under `%PROGRAMFILES(X86)%\Sticky Password`. If the user turned on local Wi-Fi/cloud sync, a synced copy also exists.
+- **Reveals:** That Sticky Password was used, the account identity, and an encrypted store of saved logins, identities and secure items. The database is encrypted under the master password, but its presence maps that a credential vault exists and which account owns it.
+- **Remove (user runs):** In the app, sign out and (if offered) delete the local database, then uninstall via Settings > Apps > Installed apps and delete the leftover `%APPDATA%\Sticky Password` folder in File Explorer and empty the Recycle Bin.
+- **Survives:** If Sticky Password cloud sync was enabled, the vault remains on the vendor's servers until you remove it there and change the master password. Any device you synced to keeps its own copy. SSD remnants until TRIM.
+- **Admin:** No to remove your per-user data; uninstalling the program may raise a UAC prompt.
+
+### Password Safe (pwsafe)
+- **Where:** The vault is a `.psafe3` file wherever you saved it (often `%USERPROFILE%\Documents` or a USB/synced folder). Settings and the recently-opened-safe (MRU) list live in the registry at `HKCU:\Software\Password Safe\Password Safe`. A key-file second factor may sit alongside the `.psafe3`.
+- **Reveals:** The `.psafe3` holds **all your passwords**, strongly encrypted under the master password. Even if the new owner cannot open it, the registry MRU reveals the safe's name and path (and that you use one), and a weak master password can be attacked offline from any copy of the file.
+- **Remove (user runs):** Move any safe you are keeping to backup, then delete the `.psafe3` file (and any key-file) in File Explorer and empty the Recycle Bin. Clear the recent-safe list in the app (Manage > Options) or with `reg delete "HKCU\Software\Password Safe\Password Safe" /f` (you run this yourself).
+- **Survives:** Cloud- or USB-synced copies of the `.psafe3` remain until deleted at those locations. SSD remnants until TRIM. An unchanged master password means any leaked copy stays exactly as strong (or weak) as that password.
+- **Admin:** No.
+
+### Padloc
+- **Where:** `%APPDATA%\Padloc\` holds the Electron desktop app's encrypted local store and settings; the program installs under `%LOCALAPPDATA%\Programs\padloc` / `%LOCALAPPDATA%\Programs\Padloc`.
+- **Reveals:** That Padloc was used, the signed-in account email, and an encrypted local copy of the vault (logins, notes). Contents are encrypted under your master password; the account email and vault existence are exposed.
+- **Remove (user runs):** In the app, lock and **log out** (clears the local store), uninstall via Settings > Apps > Installed apps, then delete the leftover `%APPDATA%\Padloc` folder in File Explorer and empty the Recycle Bin.
+- **Survives:** If the vault syncs to the Padloc cloud (or a self-hosted Padloc server), that server copy remains until you remove it and change the master password; other synced devices keep their copies. SSD remnants until TRIM.
+- **Admin:** No.
+
+### Buttercup
+- **Where:** `%APPDATA%\Buttercup\` holds the desktop app's config and app data; the program installs under `%LOCALAPPDATA%\Programs\buttercup`. Vaults are separate `.bcup` files kept locally (often in `%USERPROFILE%\Documents`) or in a linked cloud folder (Dropbox, Google Drive, WebDAV), and the config records their paths.
+- **Reveals:** That Buttercup was used and — via the config's vault list — the name and location of each `.bcup` vault (and that one exists). Each `.bcup` holds your passwords, encrypted under its master password.
+- **Remove (user runs):** Move any vault you are keeping to backup, then in the app remove each vault source; delete the `.bcup` files and the `%APPDATA%\Buttercup` folder in File Explorer and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps.
+- **Survives:** Cloud-linked `.bcup` vaults remain at the provider (Dropbox/Google Drive/WebDAV) until deleted there and the link is removed. SSD remnants until TRIM; an unchanged master password keeps any leaked copy as strong as that password.
+- **Admin:** No.
+
+### Bitcoin Core
+- **Where:** `%APPDATA%\Bitcoin\` is the data directory: `wallet.dat` directly (legacy) or under `wallets\<name>\wallet.dat` (modern multi-wallet), plus `bitcoin.conf`, `settings.json`, `debug.log`, `peers.dat`, and the full blockchain in `blocks\` and `chainstate\` (hundreds of GB). Testnet/regtest data sit in `testnet3\`/`regtest\` subfolders.
+- **Reveals:** That the owner ran a full Bitcoin node, plus the wallet itself — addresses, balances and transaction history, and the private keys in `wallet.dat` (encrypted only if you set a wallet passphrase; otherwise the keys are in the clear).
+- **Remove (user runs):** If the wallet holds funds, move them to a new wallet with a fresh seed first. Close Bitcoin Core, then in File Explorer delete the `%APPDATA%\Bitcoin` folder and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps. (Deleting the whole folder also reclaims the large blockchain.)
+- **Survives:** On-chain balances and history are public and permanent regardless of local deletion — anyone who still holds the seed/keys controls the coins. An unencrypted `wallet.dat` is especially dangerous as an SSD remnant until the free space is overwritten; exported backups and `wallet.dat` copies persist elsewhere.
+- **Admin:** No.
+
+### Monero GUI wallet
+- **Where:** `%APPDATA%\monero-project\` holds GUI settings (`monero-core.conf`); when you run the bundled node the blockchain (LMDB `data.mdb`, tens of GB) sits under `%APPDATA%\bitmonero\`. The wallet files themselves — `<name>` plus `<name>.keys` (the encrypted spend/view keys) and `<name>.address.txt` — are stored wherever you chose, often `%USERPROFILE%\Documents\Monero\`.
+- **Reveals:** That Monero (a privacy coin) was used. The `.keys` file holds the encrypted spend/view keys and the `.address.txt` exposes your primary address; the GUI config and bitmonero data confirm wallet use even if the key files were moved.
+- **Remove (user runs):** Move any funds to a new wallet with a fresh seed first. Close the app, then in File Explorer delete the wallet files (`<name>`, `.keys`, `.address.txt`), the `%APPDATA%\monero-project` folder, and `%APPDATA%\bitmonero` if present, and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps.
+- **Survives:** Monero's chain is private but permanent; whoever holds the 25-word seed can restore the wallet. Encrypted `.keys` files leave SSD remnants until TRIM; any exported seed or backup persists elsewhere.
+- **Admin:** No.
+
+### Sparrow Wallet
+- **Where:** `%APPDATA%\Sparrow\` with wallet files under `%APPDATA%\Sparrow\wallets\` (`.mv.db` H2 databases, password-encrypted), plus `config`, a `wallets-backup\` folder, and cache/log files that hold labels and server details.
+- **Reveals:** That Sparrow (a Bitcoin wallet) was used — wallet names and labels, addresses, balances and transaction history, and extended public keys (xpub) in the config/cache. Wallet files are password-encrypted, but the xpub and labels alone map your holdings and the wallet type (incl. hardware-wallet pairings).
+- **Remove (user runs):** If a hot wallet holds funds, move them to a fresh seed first. Close Sparrow, delete the `%APPDATA%\Sparrow` folder in File Explorer (including `wallets` and `wallets-backup`), and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps.
+- **Survives:** On-chain history is public and permanent; an exported xpub lets anyone watch all your addresses forever. Encrypted wallet files and the `wallets-backup` copies leave SSD remnants until TRIM; any seed you backed up elsewhere persists.
+- **Admin:** No.
+
+### Trezor Suite (desktop)
+- **Where:** `%APPDATA%\@trezor\` (the Electron app's data lives under `%APPDATA%\@trezor\suite-desktop\`), holding settings, logs, and a local metadata cache; the program installs under `%LOCALAPPDATA%\Programs\@trezor`.
+- **Reveals:** Trezor Suite is the companion app for a Trezor hardware wallet, so it does **not** hold your seed or private keys — those stay on the device. It does cache your account list, account labels, receiving addresses, extended public keys (xpub) and portfolio/transaction history, which disclose what crypto you hold and roughly how much.
+- **Remove (user runs):** In Trezor Suite, Settings > clear/forget the connected device and wipe the app's local data, then uninstall via Settings > Apps > Installed apps and delete the leftover `%APPDATA%\@trezor` folder in File Explorer; empty the Recycle Bin.
+- **Survives:** On-chain data is public and permanent. If you used Suite's **labeling** feature, your encrypted labels are backed up to your Dropbox or Google Drive and remain until removed there. Your funds are unaffected (controlled by the hardware device's seed, not this PC). SSD remnants until TRIM.
+- **Admin:** No.
+
+### Guarda desktop wallet
+- **Where:** `%APPDATA%\Guarda\` holds the Electron app's encrypted wallet data and settings; the program installs under `%LOCALAPPDATA%\Programs\guarda` / `%LOCALAPPDATA%\Programs\Guarda`.
+- **Reveals:** That the owner held crypto in Guarda (a multi-currency wallet), which assets and addresses, transaction history, and the encrypted backup/key material — protected only by the wallet password.
+- **Remove (user runs):** Move any remaining funds to a new wallet with a fresh seed first. In the app, log out / remove the wallet, uninstall via Settings > Apps > Installed apps, delete the leftover `%APPDATA%\Guarda` folder in File Explorer, and empty the Recycle Bin.
+- **Survives:** On-chain balances and history are public and permanent; whoever holds the seed controls the funds. Encrypted key files leave SSD remnants until TRIM, so moving funds to a fresh seed before handover is the real safeguard; any exported backup persists elsewhere.
+- **Admin:** No.
+
+### Coinomi desktop wallet
+- **Where:** `%LOCALAPPDATA%\Coinomi\` — wallet files are commonly kept under `%LOCALAPPDATA%\Coinomi\Coinomi\wallets\`, with settings alongside. (Exact nested layout can vary by version.)
+- **Reveals:** That the owner held crypto in Coinomi (a multi-coin wallet), which coins and addresses, and transaction history. Wallet files are encrypted under the wallet password, but their presence discloses the holdings and that a seed exists.
+- **Remove (user runs):** Move any remaining funds to a new wallet with a fresh seed first. In the app, remove the wallet, uninstall via Settings > Apps > Installed apps, delete the leftover `%LOCALAPPDATA%\Coinomi` folder in File Explorer, and empty the Recycle Bin.
+- **Survives:** On-chain history is public and permanent; whoever holds the recovery phrase controls the funds. Encrypted wallet files leave SSD remnants until TRIM; any exported seed or backup persists elsewhere.
+- **Admin:** No.
+
+### Jaxx Liberty wallet
+- **Where:** `%APPDATA%\Jaxx Liberty\` (the Electron desktop app's data). The older "Jaxx" (Classic) build used `%APPDATA%\Jaxx`. Jaxx Liberty was discontinued in 2021, so this is typically a stale but still data-bearing folder.
+- **Reveals:** That the owner held crypto in Jaxx, which assets and addresses, transaction history, and the encrypted wallet/backup material (protected by the wallet password — Jaxx's encryption was notably weak, so treat any leftover copy as at risk).
+- **Remove (user runs):** If any funds remain and are recoverable, move them to a new wallet with a fresh seed first. Uninstall via Settings > Apps > Installed apps, delete the leftover `%APPDATA%\Jaxx Liberty` (and `%APPDATA%\Jaxx`) folder in File Explorer, and empty the Recycle Bin.
+- **Survives:** On-chain history is public and permanent; whoever holds the 12-word phrase controls the funds. Given Jaxx's weak local encryption, an undeleted/recoverable wallet file is a real exposure until the free space is overwritten; any exported backup persists elsewhere.
+- **Admin:** No.
+
+### BitPay wallet
+- **Where:** `%APPDATA%\BitPay\` holds the Electron wallet app's data (encrypted wallet/key store and settings); the program installs under `%LOCALAPPDATA%\Programs\bitpay`. Wallets migrated from its predecessor Copay may also leave `%APPDATA%\Copay`.
+- **Reveals:** That the owner used the BitPay (ex-Copay) wallet, which coins and addresses, transaction history, and the encrypted key material protected by the wallet password.
+- **Remove (user runs):** Move any remaining funds to a new wallet with a fresh seed first. In the app, delete each wallet, uninstall via Settings > Apps > Installed apps, delete the leftover `%APPDATA%\BitPay` (and `%APPDATA%\Copay`) folder in File Explorer, and empty the Recycle Bin.
+- **Survives:** On-chain balances and history are public and permanent; whoever holds the recovery phrase controls the funds. Encrypted key files leave SSD remnants until TRIM; any exported backup persists elsewhere.
+- **Admin:** No.
+
+### Daedalus (Cardano full-node wallet)
+- **Where:** `%APPDATA%\Daedalus Mainnet\` — wallet secret keys (encrypted under your spending password) in a `wallets\` store, the full Cardano chain under `chain\` (very large), plus `Logs\` and config. Test networks use sibling folders such as `Daedalus Testnet` / `Daedalus Preprod`.
+- **Reveals:** That the owner ran Daedalus and held ADA — wallet addresses, balances and transaction history, and the encrypted spending keys. The chain folder alone confirms full-node use even if the wallet was restored elsewhere.
+- **Remove (user runs):** Move any funds to a new wallet with a fresh recovery phrase first. Close Daedalus, delete the `%APPDATA%\Daedalus Mainnet` folder (and any Testnet/Preprod siblings) in File Explorer, and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps (this reclaims the large chain data).
+- **Survives:** Cardano's chain is public and permanent; whoever holds the 24-word phrase controls the ADA. Encrypted key files leave SSD remnants until TRIM; any exported recovery phrase or backup persists elsewhere.
+- **Admin:** No.
+
+### Electrum altcoin forks (Electron Cash, Electrum-LTC, etc.)
+- **Where:** Electrum's codebase is reused by several coins, each with its own data folder: Electron Cash (BCH) `%APPDATA%\ElectronCash\`, Electrum-LTC (Litecoin) `%APPDATA%\Electrum-LTC\`, and similar forks. Each mirrors Electrum's layout — a `wallets\` folder (default file `default_wallet`) plus a `config` file for settings and recent servers.
+- **Reveals:** That the owner used that coin's Electrum fork — addresses, balances, transaction history and wallet labels. As with Electrum, these forks do not force encryption, so an unprotected wallet file can expose the seed phrase and private keys directly.
+- **Remove (user runs):** If funds remain, move them to a new wallet with a fresh seed first. Close the app, then in File Explorer delete the relevant folder (`%APPDATA%\ElectronCash`, `%APPDATA%\Electrum-LTC`, etc.) and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps.
+- **Survives:** On-chain history is public and permanent. An unencrypted wallet file is especially dangerous as an SSD remnant until the free space is overwritten; any exported seed or backup persists elsewhere.
+- **Admin:** No.
+
+### Moneydance
+- **Where:** `%APPDATA%\Moneydance\` holds the app's preferences, the default dataset and automatic backups; datasets opened from elsewhere (the `.moneydance` document, often under `%USERPROFILE%\Documents`) are referenced by a recent-files list. The program installs under `%PROGRAMFILES%\Moneydance` / `%LOCALAPPDATA%\Programs`.
+- **Reveals:** Linked bank, credit-card and investment account names and balances, full transaction history, payees, and the online-banking identifiers used to download transactions — a detailed picture of the owner's finances. The recent-files list exposes dataset names/paths even if a dataset was moved.
+- **Remove (user runs):** Close Moneydance, then in File Explorer delete the `.moneydance` dataset(s) and the `%APPDATA%\Moneydance` folder (preferences + backups) and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps. If you used Moneydance's sync/cloud, remove the dataset there too.
+- **Survives:** OneDrive copies if your Documents folder is synced; any sync/cloud dataset on the service; File History, system images and backup drives; SSD remnants until TRIM.
+- **Admin:** No.
+
+### MoneyWiz (Windows build)
+- **Where:** The Windows version of MoneyWiz shipped as a Microsoft Store app, so its data lives in a package folder under `%LOCALAPPDATA%\Packages\` (look for a MoneyWiz-named package family, with the database and settings inside its `LocalState`/`LocalCache`). The Store app itself appears in Settings > Apps.
+- **Reveals:** Account names and balances, categorized transaction history, payees and budgets — the owner's income and spending. MoneyWiz also syncs across devices, so the local store mirrors the synced data.
+- **Remove (user runs):** In MoneyWiz, sign out of sync, then uninstall the app via Settings > Apps > Installed apps (removing a Store app deletes its package `LocalState`). Confirm the MoneyWiz folder under `%LOCALAPPDATA%\Packages` is gone and empty the Recycle Bin.
+- **Survives:** If MoneyWiz Sync (the vendor's cloud) was used, your data remains on their servers and on other synced devices until you delete it there. SSD remnants until TRIM; any backup persists.
+- **Admin:** No.
+
+### Microsoft Money (legacy)
+- **Where:** Microsoft Money (discontinued 2009; "Money Plus Sunset" still installs) stores each file as a `.mny` document wherever you saved it, usually `%USERPROFILE%\Documents`, with `.mbf` backups alongside. Settings and the recently-opened-file (MRU) list live in the registry at `HKCU:\Software\Microsoft\Microsoft Money`.
+- **Reveals:** Linked bank, credit-card, loan and investment accounts and balances, full transaction history, payees, and any online-banking identifiers stored for downloads — a complete financial history for whoever kept the file.
+- **Remove (user runs):** In File Explorer delete the `.mny` file and its `.mbf` backups and empty the Recycle Bin. Clear the recent-file list with `reg delete "HKCU\Software\Microsoft\Microsoft Money" /f` (you run this yourself) or uninstall the program via Settings > Apps > Installed apps.
+- **Survives:** OneDrive copies if Documents is synced; the registry MRU if left in place (and its copies in restore points); File History and backup drives; SSD remnants until TRIM.
+- **Admin:** No.
+
+### Sage 50 Accounts (company data)
+- **Where:** Sage 50 Accounts (UK) stores each company as a data folder whose name ends in **`.saj`** (with a matching `.sai` index), by default under `%PROGRAMDATA%\Sage\Accounts\<year>\`. Sage 50 US (formerly Peachtree) instead keeps company data under a chosen folder or `%PUBLIC%\Documents\Sage Software\`. Per-user settings/recent-company hints also sit under `HKCU:\Software\Sage`.
+- **Reveals:** A business's full books — customer and supplier names and contacts, employee and payroll records, bank and card account numbers, invoices, VAT/tax identifiers, and transaction history.
+- **Remove (user runs):** Close Sage, then in File Explorer delete the company `.saj`/`.sai` data set(s) from `%PROGRAMDATA%\Sage\Accounts` (or the US data location) and empty the Recycle Bin. Uninstall via Settings > Apps > Installed apps. If this is a business/work machine, hand it back through the organization rather than stripping it yourself — accounting data often has legal retention duties.
+- **Survives:** Off-site accountant copies, Sage Drive / cloud-backup copies, and local Sage backups (`.001`/`.ptb`) persist until removed at those locations; File History, system images and backup drives; SSD remnants until TRIM.
+- **Admin:** No to delete a company folder under your own Documents; clearing `%PROGRAMDATA%\Sage` and uninstalling the program need admin.
+
+### Drake Tax (preparer client files)
+- **Where:** Drake Tax installs to `%SYSTEMDRIVE%\DrakeSoftware\Drake<YY>\` in current versions (older installs used `C:\Drake<YY>` directly), where `<YY>` is the two-digit tax year. Client returns and the client database live in its `DT`/`DrakeYY` data folders under that path.
+- **Reveals:** Among the most sensitive data a PC can hold — professional tax preparer client files: full legal names, Social Security Numbers (filers, spouses, dependents), addresses, employer and income data, and bank account/routing numbers, for every client and year prepared.
+- **Remove (user runs):** This is almost always a **work/business device** — return it through the firm and let them handle client-data retention and secure disposal rather than deleting yourself. If it is genuinely yours to clear: close Drake, delete the `%SYSTEMDRIVE%\DrakeSoftware` (or `C:\Drake<YY>`) folders in File Explorer, empty the Recycle Bin, and uninstall via Settings > Apps > Installed apps.
+- **Survives:** E-filed returns are held by the IRS/state and in Drake's e-file/online records; prior-year installs each keep their own data; firm network shares, document-management systems and backups persist independently. SSD remnants until TRIM.
+- **Admin:** Yes (program and its data folders are machine-wide on the C: root; removing them and uninstalling need admin).
+
+### Intuit ProSeries (preparer client files)
+- **Where:** Intuit ProSeries installs per tax year to `%SYSTEMDRIVE%\ProWin<YY>\` (standalone) or `%SYSTEMDRIVE%\ProNet<YY>\` (network), with client returns in a `<YY>Data` subfolder. (Its Intuit registry presence under `HKCU:\Software\Intuit` is already cataloged separately.)
+- **Reveals:** Professional tax client files — full names, SSNs for filers/spouses/dependents, addresses, income and employer detail, and bank account/routing numbers, for every client and year prepared.
+- **Remove (user runs):** Treat as a **work/business device** and return it through the firm for proper client-data disposal. If it is genuinely yours: close ProSeries, delete the `ProWin<YY>`/`ProNet<YY>` folders under `%SYSTEMDRIVE%` in File Explorer, empty the Recycle Bin, and uninstall via Settings > Apps > Installed apps.
+- **Survives:** E-filed returns live with the IRS/state and in Intuit's e-file/online records; each tax year's install keeps its own data; firm shares and backups persist. SSD remnants until TRIM.
+- **Admin:** Yes (machine-wide install on the C: root; removal and uninstall need admin).
+
+### Intuit Lacerte (preparer client files)
+- **Where:** Intuit Lacerte installs under `%SYSTEMDRIVE%\Lacerte\` with a per-year subfolder (`<YY>tax`) and client data in its `CLData`/`IData`-style folders. (Lacerte's Intuit registry presence under `HKCU:\Software\Intuit` is already cataloged separately.)
+- **Reveals:** Professional tax client files — names, SSNs, addresses, income and bank details for every client and year — the same highly sensitive preparer data as ProSeries/Drake.
+- **Remove (user runs):** Treat as a **work/business device** and return it through the firm. If it is genuinely yours: close Lacerte, delete the `%SYSTEMDRIVE%\Lacerte\<YY>tax` data folders in File Explorer, empty the Recycle Bin, and uninstall via Settings > Apps > Installed apps.
+- **Survives:** E-filed returns are held by the IRS/state and Intuit's e-file records; prior-year data folders persist; firm network shares and backups persist. SSD remnants until TRIM.
+- **Admin:** Yes (machine-wide install on the C: root; removal and uninstall need admin).
+
+### TaxSlayer Pro (desktop)
+- **Where:** TaxSlayer Pro (the desktop product for tax preparers) installs to `%SYSTEMDRIVE%\TaxSlayerPro\` and stores client returns in its data folders there. The **consumer** TaxSlayer product is web-only, so on a PC it leaves browser traces (saved login, cookies, cache) rather than a local data folder.
+- **Reveals:** For TaxSlayer Pro, professional client files — names, SSNs, addresses, income and bank account detail per client/year. For the consumer web version, a stored browser session can open the owner's online account and returns.
+- **Remove (user runs):** Pro: treat as a **work/business device** and return it through the firm; if yours, close the app, delete `%SYSTEMDRIVE%\TaxSlayerPro` in File Explorer, empty the Recycle Bin, and uninstall via Settings > Apps > Installed apps. Consumer: sign out in the browser and clear the saved password, cookies and site data for the TaxSlayer site, and sign in to the account to review it.
+- **Survives:** E-filed returns are held by the IRS/state and in TaxSlayer's online records; consumer returns live entirely on TaxSlayer's servers regardless of this PC; firm shares and backups persist for Pro. SSD remnants until TRIM.
+- **Admin:** Yes for the Pro desktop install (machine-wide on the C: root); No for the consumer web/browser cleanup.
+
+### IDrive
+- **Where:** Installs machine-wide (default `%ProgramFiles(x86)%\IDrive`, or `%ProgramFiles%\IDrive`) and runs a background scheduler service. The account details, the backup-set definition (the list of folders chosen for backup) and logs are kept in IDrive's own program/app-data folders. (Exact per-user / `%ProgramData%` config path not fully confirmed — see return.)
+- **Reveals:** The IDrive account email, which local folders the owner backed up (the backup set), and backup/restore logs with file paths and timestamps.
+- **Remove (user runs):** Open IDrive and sign out of the account; uninstall via Settings > Apps > Installed apps (this removes the service); delete any leftover IDrive folder under Program Files/ProgramData; empty the Recycle Bin. Remove the online backup at idrive.com (and its account-side archive/trash) if the account is not being handed over.
+- **Survives:** **The cloud backup on the IDrive account persists until it is removed server-side** — uninstalling only stops this PC. IDrive keeps previous file versions by design until pruned in the account. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (uninstalling the service and clearing Program Files/ProgramData needs elevation).
+
+### Backblaze Personal Backup
+- **Where:** `%ProgramData%\Backblaze` — the `bzdata` subfolder holds the backup state, the file lists of everything backed up (`bzdata\bzfilelists`), reports and logs; account/config live here too. Runs as a SYSTEM service.
+- **Reveals:** The Backblaze account email and — through the file lists and logs — the full paths and names of every file and folder the owner backed up, which effectively maps their whole data layout.
+- **Remove (user runs):** Open the Backblaze control panel and sign out; uninstall via Settings > Apps (there is also an "uninstall and delete state" option); delete any remaining `%ProgramData%\Backblaze` from an elevated session; empty the Recycle Bin. Delete the online backup (and close/transfer the account) at the Backblaze website if it is not being handed over.
+- **Survives:** **The cloud backup stays on Backblaze's servers** until the account is emptied/closed (version history is kept for the retention window). The `bzdata` folder is SYSTEM-owned, so clearing it on disk needs admin. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (`bzdata` is ACL-restricted to SYSTEM; uninstalling the service needs elevation).
+
+### CrashPlan (Code42)
+- **Where:** `%ProgramData%\CrashPlan` — `conf\` (service/user config including the backup selection), `cache\`, and `log\`. Installs under `%ProgramFiles%\CrashPlan` and runs a service. (Branded CrashPlan or Code42; same layout.)
+- **Reveals:** The account/login, the backup selection (which folders and files were backed up), and logs naming file paths and timestamps.
+- **Remove (user runs):** Sign out in the CrashPlan app; uninstall via Settings > Apps (removes the service); delete any leftover `%ProgramData%\CrashPlan` from an elevated session; empty the Recycle Bin. Remove the archive server-side via the CrashPlan/Code42 console if the account is not transferring with the PC.
+- **Survives:** **The backup archive persists on the CrashPlan/Code42 cloud (or the organisation's server)** until it is removed there; version history is retained by policy. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service uninstall and `%ProgramData%` cleanup need elevation).
+
+### Carbonite Safe
+- **Where:** Installs under `%ProgramFiles%\Carbonite\Carbonite Backup` and keeps config, state and logs under `%ProgramData%\Carbonite` (subfolder commonly `Carbonite Backup`). Runs a background service. (Exact `%ProgramData%` subfolder not fully confirmed — see return.)
+- **Reveals:** The Carbonite account, which folders were selected for backup, and backup logs.
+- **Remove (user runs):** Sign out / deactivate this computer in the Carbonite app; uninstall via Settings > Apps; delete any leftover `%ProgramData%\Carbonite` from an elevated session; empty the Recycle Bin. Manage or remove the online backup in the Carbonite account, and deactivate the subscription's computer if it is not transferring with the PC.
+- **Survives:** **The cloud backup remains on Carbonite's servers** until the subscription/computer is removed there. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service uninstall and `%ProgramData%` cleanup need elevation).
+
+### Degoo
+- **Where:** On Windows, Degoo ships mainly as a Microsoft Store app, so its state lives under `%LOCALAPPDATA%\Packages\` in a Degoo-named package folder. A standalone desktop build, if installed, keeps config under `%APPDATA%\Degoo`. (Degoo's exact package family name and desktop-folder name are not confirmed — see return.)
+- **Reveals:** The Degoo account (often the linked Google/email login) and cached thumbnails/metadata of backed-up photos and files.
+- **Remove (user runs):** Sign out in the Degoo app; uninstall via Settings > Apps (a Store app's per-user data is removed with it); for a desktop build delete the `%APPDATA%\Degoo` folder; empty the Recycle Bin. Delete the backup in the Degoo account if it is not being handed over.
+- **Survives:** **The Degoo cloud copy persists until deleted in the account.** SSD/HDD remnants of any local cache until TRIM/overwrite.
+- **Admin:** No.
+
+### Icedrive
+- **Where:** `%APPDATA%\Icedrive` (account/config, cache, logs). Icedrive can also mount a virtual drive via an installed driver/service. (Folder may be cased `icedrive`.)
+- **Reveals:** The Icedrive account email, cached opened files, and the mount/sync configuration.
+- **Remove (user runs):** In Icedrive, log out / unlink; quit and uninstall via Settings > Apps (removes the mount driver); delete any leftover `%APPDATA%\Icedrive`; empty the Recycle Bin. Remove the cloud copy at the Icedrive website (check its trash).
+- **Survives:** **The Icedrive cloud copy persists until deleted server-side.** Streamed / online-only items were never fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user data; uninstalling the virtual-drive driver needs elevation.
+
+### Filen
+- **Where:** `%APPDATA%\Filen` (account/config, sync-location list, cache, logs) for the Filen desktop client; plus the user-chosen local sync folder(s). (The appdata folder may be `filen_desktop` / `filen-desktop` depending on version — see return.)
+- **Reveals:** The Filen account email, which local folders were set to sync, and cached files.
+- **Remove (user runs):** In Filen, log out; quit and uninstall via Settings > Apps; delete the local sync folder(s) and any leftover `%APPDATA%\Filen`; empty the Recycle Bin. Remove the cloud copy at the Filen website (check its trash).
+- **Survives:** **The Filen cloud copy persists until deleted server-side** (Filen is end-to-end encrypted, so the provider cannot read it, but it stays until the owner deletes it). SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Internxt Drive
+- **Where:** `%APPDATA%\Internxt Drive` (account/config, cache, logs); plus the local sync/virtual folder under the user profile. (The appdata folder may be `internxt-drive` — see return.)
+- **Reveals:** The Internxt account email, the synced-folder configuration, and cached files.
+- **Remove (user runs):** In Internxt, log out; quit and uninstall via Settings > Apps; delete the local sync folder and any leftover `%APPDATA%\Internxt Drive`; empty the Recycle Bin. Remove the cloud copy in the Internxt web app (check its trash).
+- **Survives:** **The Internxt cloud copy persists until deleted server-side** (end-to-end encrypted, but still present until removed). SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Cryptomator (vault list)
+- **Where:** `%APPDATA%\Cryptomator` — its `settings.json` records the paths and names of the vaults the owner added, plus the recent-vault list. The encrypted vault folders themselves live wherever the owner created them, often inside a cloud-sync folder.
+- **Reveals:** That Cryptomator was used, and **where the encrypted vaults are and what they are named** — not their contents (vault data and the vault passwords are encrypted and are never displayed).
+- **Remove (user runs):** In Cryptomator, remove each vault from the list; quit and uninstall via Settings > Apps; delete `%APPDATA%\Cryptomator`. Then delete the actual encrypted vault folders at their real locations (and remove their cloud copies), and empty the Recycle Bin.
+- **Survives:** The encrypted vault data itself — deleting the vault *list* does not touch the vault folders, and any cloud copy of a vault persists until removed from that provider. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Yandex.Disk
+- **Where:** Sync folder default `%USERPROFILE%\YandexDisk`. Config/state: `%APPDATA%\Yandex\YandexDisk` and (the 2.0 / streaming client) `%LOCALAPPDATA%\Yandex\YandexDisk2`.
+- **Reveals:** The Yandex account, which files were synced, and cached/streamed file metadata.
+- **Remove (user runs):** In Yandex.Disk, unlink / log out; quit and uninstall via Settings > Apps; delete the local `YandexDisk` folder and the `%APPDATA%\Yandex\YandexDisk` / `%LOCALAPPDATA%\Yandex\YandexDisk2` config; empty the Recycle Bin. Remove the cloud copy at the Yandex.Disk website (check its trash).
+- **Survives:** **The Yandex cloud copy persists until deleted server-side.** Streamed items were not fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Cloud Mail.ru (Disk-O:)
+- **Where:** Vendor folder `%APPDATA%\Mail.Ru` and/or `%LOCALAPPDATA%\Mail.Ru` (the Mail.ru cloud client / "Disk-O:" mounts the cloud as a drive). (Exact subfolder — e.g. `Disk-O` or `Cloud` — not confirmed; see return.)
+- **Reveals:** The Mail.ru account, the mounted/synced cloud-storage configuration, and cached file metadata.
+- **Remove (user runs):** In the client, log out / unlink; quit and uninstall via Settings > Apps; delete the `%APPDATA%\Mail.Ru` / `%LOCALAPPDATA%\Mail.Ru` folder; empty the Recycle Bin. Remove the cloud copy at the Mail.ru cloud website (check its trash).
+- **Survives:** **The Mail.ru cloud copy persists until deleted server-side.** Mounted (streamed) items were not fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Zoho WorkDrive (TrueSync)
+- **Where:** `%LOCALAPPDATA%\Zoho WorkDrive TrueSync` (account/config, cache, logs); TrueSync also mounts a virtual drive. (Exact folder name/casing not fully confirmed — see return.)
+- **Reveals:** The Zoho account and organisation/team, which WorkDrive folders were synced, and cached files — usually work/enterprise data.
+- **Remove (user runs):** In WorkDrive TrueSync, sign out; quit and uninstall via Settings > Apps (removes the virtual drive); delete any leftover `%LOCALAPPDATA%\Zoho WorkDrive TrueSync`; empty the Recycle Bin. If this is organisational data, prefer handing the device to IT; otherwise remove the cloud copy in the Zoho WorkDrive web app.
+- **Survives:** **The WorkDrive cloud copy and any organisation retention policy persist until removed server-side.** Streamed items were not fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user data; uninstalling the drive component needs elevation.
+
+### Egnyte Desktop
+- **Where:** Classic "Egnyte Connect": `%LOCALAPPDATA%\Egnyte Connect`. Newer "Egnyte Desktop App": under `%LOCALAPPDATA%\Egnyte` and `%ProgramData%\Egnyte`; it mounts a drive and runs a service. (Which path exists depends on version — see return.)
+- **Reveals:** The Egnyte domain (`company.egnyte.com`), the account, which folders were synced, and cached files — typically enterprise data.
+- **Remove (user runs):** In the Egnyte app, sign out; quit and uninstall via Settings > Apps (removes the drive/service); delete any leftover `%LOCALAPPDATA%\Egnyte Connect` / `%LOCALAPPDATA%\Egnyte` and `%ProgramData%\Egnyte`; empty the Recycle Bin. This is usually company data — prefer handing the device to IT.
+- **Survives:** **The Egnyte cloud copy and organisation retention/policy persist until removed server-side.** Streamed items were not fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user cache; uninstalling the drive/service needs elevation.
+
+### Citrix ShareFile
+- **Where:** `%LOCALAPPDATA%\Citrix\ShareFile` and/or `%APPDATA%\Citrix\ShareFile` (the ShareFile Drive / "Citrix Files for Windows" client; may sit under a `Citrix Files` subfolder). Mounts a virtual drive. (Exact subfolder name not fully confirmed — see return.)
+- **Reveals:** The ShareFile subdomain (`company.sharefile.com`), the account, and cached opened files — typically business data.
+- **Remove (user runs):** In ShareFile / Citrix Files, sign out; quit and uninstall via Settings > Apps; delete any leftover `%LOCALAPPDATA%\Citrix\ShareFile` / `%APPDATA%\Citrix\ShareFile`; empty the Recycle Bin. Usually business data — prefer handing the device to IT.
+- **Survives:** **The ShareFile cloud copy and organisation retention persist until removed server-side.** Streamed items were not fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user cache; uninstalling the drive component needs elevation.
+
+### odrive
+- **Where:** `%USERPROFILE%\.odrive` (agent config and the map of linked cloud accounts, under `.odrive\common`); default sync folder `%USERPROFILE%\odrive`.
+- **Reveals:** **Every cloud account the owner linked through odrive** (odrive aggregates Google Drive, Dropbox, OneDrive and others), plus the local sync folder and placeholder files.
+- **Remove (user runs):** In odrive, deauthorize/unsync and sign out; quit and uninstall via Settings > Apps; delete the `%USERPROFILE%\.odrive` config and the `%USERPROFILE%\odrive` sync folder; empty the Recycle Bin. Unlink odrive from each underlying cloud account, and remove any copies in those accounts.
+- **Survives:** The files in each **underlying cloud account persist** until removed there; odrive is only the connector. "Unsynced" placeholders were never fully local. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No.
+
+### Private Internet Access (PIA)
+- **Where:** `%ProgramData%\pia` (the daemon's account token, chosen regions/settings, and `daemon.log`). Older PIA used `%LOCALAPPDATA%\pia_manager`. Runs a background service. (Which path holds account/settings varies by version — see return.)
+- **Reveals:** The PIA account/username, preferred servers and connection settings, and connection logs.
+- **Remove (user runs):** In PIA, log out; quit and uninstall via Settings > Apps (removes the service and split-tunnel driver); delete any leftover `%ProgramData%\pia` / `%LOCALAPPDATA%\pia_manager` from an elevated session; empty the Recycle Bin.
+- **Survives:** The PIA subscription/account on their servers is untouched (manage it on the PIA website). SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service and driver removal and `%ProgramData%` cleanup need elevation).
+
+### CyberGhost VPN
+- **Where:** `%LOCALAPPDATA%\CyberGhost 8` and `%ProgramData%\CyberGhost 8` (account/config, settings, logs). Runs a service. (Version-named folder; older versions differ — see return.)
+- **Reveals:** The CyberGhost account, favourite servers and settings, and connection logs.
+- **Remove (user runs):** In CyberGhost, log out; quit and uninstall via Settings > Apps; delete any leftover `%LOCALAPPDATA%\CyberGhost 8` / `%ProgramData%\CyberGhost 8` from an elevated session; empty the Recycle Bin.
+- **Survives:** The CyberGhost account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service removal and `%ProgramData%` cleanup need elevation).
+
+### IPVanish
+- **Where:** `%LOCALAPPDATA%\IPVanish` (account/config, settings, logs); some builds use `%APPDATA%\IPVanish`. Installs an OpenVPN helper service. (Exact folder not fully confirmed — see return.)
+- **Reveals:** The IPVanish account/username, server preferences, and connection logs.
+- **Remove (user runs):** In IPVanish, log out; quit and uninstall via Settings > Apps; delete any leftover `%LOCALAPPDATA%\IPVanish` / `%APPDATA%\IPVanish`; empty the Recycle Bin.
+- **Survives:** The IPVanish account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the helper service needs elevation.
+
+### Windscribe
+- **Where:** `%APPDATA%\Windscribe\Windscribe2` (account/config, preferences, logs). Installs a helper service.
+- **Reveals:** The Windscribe account/username, server and firewall preferences, and logs.
+- **Remove (user runs):** In Windscribe, log out; quit and uninstall via Settings > Apps; delete any leftover `%APPDATA%\Windscribe`; empty the Recycle Bin.
+- **Survives:** The Windscribe account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the helper service needs elevation.
+
+### hide.me VPN
+- **Where:** `%APPDATA%\hide.me VPN` (or `%LOCALAPPDATA%\hide.me VPN`) — account/config, settings, logs. Installs a helper service. (Exact folder not fully confirmed — see return.)
+- **Reveals:** The hide.me account/username, server preferences, and connection logs.
+- **Remove (user runs):** In hide.me, log out; quit and uninstall via Settings > Apps; delete any leftover `%APPDATA%\hide.me VPN` / `%LOCALAPPDATA%\hide.me VPN`; empty the Recycle Bin.
+- **Survives:** The hide.me account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the helper service needs elevation.
+
+### TunnelBear
+- **Where:** `%LOCALAPPDATA%\TunnelBear` (account/config, settings, logs). Installs a helper service. (Some state may also sit under `%APPDATA%\TunnelBear` — see return.)
+- **Reveals:** The TunnelBear account email, server preferences, and connection logs.
+- **Remove (user runs):** In TunnelBear, log out; quit and uninstall via Settings > Apps; delete any leftover `%LOCALAPPDATA%\TunnelBear`; empty the Recycle Bin.
+- **Survives:** The TunnelBear account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the helper service needs elevation.
+
+### PrivadoVPN
+- **Where:** `%APPDATA%\PrivadoVPN` (or `%LOCALAPPDATA%\PrivadoVPN`) — account/config, settings, logs. Installs a helper service. (Exact folder not fully confirmed — see return.)
+- **Reveals:** The PrivadoVPN account, server preferences, and connection logs.
+- **Remove (user runs):** In PrivadoVPN, log out; quit and uninstall via Settings > Apps; delete any leftover `%APPDATA%\PrivadoVPN` / `%LOCALAPPDATA%\PrivadoVPN`; empty the Recycle Bin.
+- **Survives:** The PrivadoVPN account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the helper service needs elevation.
+
+### Hola VPN
+- **Where:** Desktop client config `%APPDATA%\hola` (and `%LOCALAPPDATA%\Hola`); runs a `hola_svc` service. Hola is also commonly a browser extension, whose data sits in the browser profile (browsers cluster). (Exact desktop-client folder not fully confirmed — see return.)
+- **Reveals:** The Hola account/install and its settings. (Hola has historically routed other users' traffic through this peer — worth flagging to the owner, but that is behaviour, not a stored artifact.)
+- **Remove (user runs):** In Hola, log out; quit and uninstall via Settings > Apps (removes the service); delete any leftover `%APPDATA%\hola` / `%LOCALAPPDATA%\Hola`; remove the Hola browser extension if present; empty the Recycle Bin.
+- **Survives:** Any Hola account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the service needs elevation.
+
+### AdGuard VPN
+- **Where:** `%LOCALAPPDATA%\AdGuardVPN` (account/config, settings, logs) — distinct from the AdGuard ad-blocker product (`%LOCALAPPDATA%\AdGuard` / `%ProgramData%\AdGuard`). Installs a service/driver. (Exact folder not fully confirmed — see return.)
+- **Reveals:** The AdGuard account email, server and exclusion-list preferences, and logs.
+- **Remove (user runs):** In AdGuard VPN, log out; quit and uninstall via Settings > Apps; delete any leftover `%LOCALAPPDATA%\AdGuardVPN`; empty the Recycle Bin.
+- **Survives:** The AdGuard account on their servers is untouched. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user config; uninstalling the service/driver needs elevation.
+
+### Cloudflare WARP (1.1.1.1)
+- **Where:** `%APPDATA%\Cloudflare` (client settings, logs) and `%ProgramData%\Cloudflare` (service config, including Zero Trust enrollment / `mdm.xml` when used). Runs a service.
+- **Reveals:** That WARP was used, and its settings; **if enrolled in Cloudflare Zero Trust, the organisation/team name** and enrollment — a corporate identifier. Consumer WARP reveals little personal data.
+- **Remove (user runs):** In the 1.1.1.1 / WARP app, disconnect and (if enrolled) log out of Zero Trust; quit and uninstall via Settings > Apps; delete any leftover `%APPDATA%\Cloudflare` / `%ProgramData%\Cloudflare` from an elevated session; empty the Recycle Bin.
+- **Survives:** A Zero Trust **device enrollment stays in the organisation's Cloudflare dashboard** until an admin removes it. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service removal and `%ProgramData%` cleanup need elevation; managed enrollments may be IT-locked).
+
+### ZeroTier One
+- **Where:** `%ProgramData%\ZeroTier One` — `networks.d\` (one file per joined virtual network, named by network ID), this node's `identity.public`, and the service config. (`identity.secret` and `authtoken.secret` are private key/token files — never opened or displayed.) Runs a service.
+- **Reveals:** The virtual network IDs this machine joined and this node's ZeroTier address — mapping the owner's overlay/mesh networks. Count and name networks only; never read the secret key files.
+- **Remove (user runs):** In the ZeroTier tray app (or CLI), leave each network; quit and uninstall ZeroTier One via Settings > Apps; delete any leftover `%ProgramData%\ZeroTier One` from an elevated session; empty the Recycle Bin.
+- **Survives:** This node's membership is also recorded on the **network controller (server-side)** until the network's admin deauthorizes/removes the member. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service removal and `%ProgramData%` cleanup need elevation; the secret files are SYSTEM-owned).
+
+### OpenVPN Connect (v3)
+- **Where:** `%APPDATA%\OpenVPN Connect` — imported `profiles\`, `config.json`, and logs. Installs a TAP/Wintun driver and service. (This is the official OpenVPN Connect client; the community OpenVPN GUI's `%USERPROFILE%\OpenVPN\config` profiles are a separate catalog entry.)
+- **Reveals:** Imported VPN profiles (server hostnames/addresses, the provider or employer), any saved username, and connection logs.
+- **Remove (user runs):** In OpenVPN Connect, remove each imported profile and sign out of any subscription; quit and uninstall via Settings > Apps; delete any leftover `%APPDATA%\OpenVPN Connect`; empty the Recycle Bin.
+- **Survives:** The VPN server/account itself (provider or employer) is untouched. A saved credential inside a profile is DPAPI-protected but present until removed. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the user profiles; uninstalling the driver/service needs elevation.
+
+### SoftEther VPN Client
+- **Where:** `%ProgramFiles%\SoftEther VPN Client\vpn_client.config` (saved connection settings: server hostnames/ports, virtual hub and account names). Runs a service and a virtual network adapter.
+- **Reveals:** The VPN servers the owner connected to and the account names configured — exposing employers or remote networks.
+- **Remove (user runs):** In SoftEther VPN Client Manager, delete each connection setting and the virtual adapter; quit and uninstall via Settings > Apps; delete any leftover `%ProgramFiles%\SoftEther VPN Client` from an elevated session; empty the Recycle Bin.
+- **Survives:** The remote SoftEther server/account is untouched. Saved passwords in the config are obfuscated but present until removed. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service/adapter removal and Program Files cleanup need elevation).
+
+### LogMeIn Hamachi
+- **Where:** `%ProgramData%\LogMeIn Hamachi` (`client.cfg` with this node's Hamachi virtual address/ID, plus databases of joined networks and peers). Runs a service and a virtual adapter.
+- **Reveals:** The Hamachi networks the owner joined, this client's Hamachi ID/virtual IP, and peer information — mapping the owner's VPN mesh and its other members.
+- **Remove (user runs):** In Hamachi, leave each network and sign out; quit and uninstall via Settings > Apps; delete any leftover `%ProgramData%\LogMeIn Hamachi` from an elevated session; empty the Recycle Bin.
+- **Survives:** Network membership is also recorded in the **LogMeIn/GoTo account (server-side)** until removed there. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service/adapter removal and `%ProgramData%` cleanup need elevation).
+
+### Palo Alto GlobalProtect
+- **Where:** `%APPDATA%\Palo Alto Networks\GlobalProtect` (per-user config/logs); `%ProgramData%\Palo Alto Networks\GlobalProtect` (`PanGPS` service logs); `HKLM:\SOFTWARE\Palo Alto Networks\GlobalProtect` (portal address and settings). A corporate-managed VPN.
+- **Reveals:** The corporate VPN **portal address(es)**, the owner's corporate username, and connection history/logs — a strong employer identifier.
+- **Remove (user runs):** This is almost always employer software — **prefer returning the device to the organisation's IT.** If authorized and permitted: in GlobalProtect disconnect and remove the portal, then uninstall via Settings > Apps (often requires an uninstall passcode set by IT), delete any leftover `%APPDATA%` / `%ProgramData%` Palo Alto folders from an elevated session, and empty the Recycle Bin.
+- **Survives:** The corporate portal/gateway records and any device posture/enrollment on the organisation's side remain — only IT can remove those. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service removal and `%ProgramData%` cleanup need elevation; uninstall may be IT-locked).
+
+### FortiClient VPN
+- **Where:** Saved SSL-VPN tunnels in `HKCU:\Software\Fortinet\FortiClient\Sslvpn\Tunnels\<name>` (each with the gateway `Server` and often a saved username); machine config under `%ProgramData%\Fortinet\FortiClient`. Often corporate-managed.
+- **Reveals:** The corporate SSL-VPN **gateway address(es)**, the tunnel names, and saved usernames — exposing the employer / remote network.
+- **Remove (user runs):** In FortiClient, delete each saved VPN tunnel; if allowed, uninstall via Settings > Apps (may be locked by FortiClient EMS / IT). The per-user tunnels live under the `HKCU` key above and clear with the profile on a reset. Empty the Recycle Bin.
+- **Survives:** The corporate gateway and any EMS enrollment on the organisation's side are untouched — handle through IT. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the `HKCU` tunnels; uninstalling (and clearing `%ProgramData%`) needs elevation and may be IT-locked.
+
+### SonicWall NetExtender
+- **Where:** Saved connection profiles in `HKCU:\Software\SonicWall\NetExtender` (server address, username, domain) and/or `%APPDATA%\SonicWall\NetExtender`. Often corporate-managed. (Key name casing — historically `SonicWALL` — and whether a newer NetExtender rewrite stores elsewhere vary by version; see return.)
+- **Reveals:** The corporate SSL-VPN **server address**, username and domain used — an employer / remote-network identifier.
+- **Remove (user runs):** In NetExtender, delete each saved profile; uninstall via Settings > Apps if allowed. The per-user profiles live under the `HKCU` key / `%APPDATA%\SonicWall` and clear with the profile on a reset. Empty the Recycle Bin.
+- **Survives:** The SonicWall appliance/account on the organisation's side is untouched — handle through IT. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the per-user profiles; uninstalling needs elevation and may be IT-locked.
+
+### Ivanti / Pulse Secure
+- **Where:** `%APPDATA%\Pulse Secure` (the user connection store, e.g. `ConnectionStore\connstore.dat`, listing saved connections, URLs and realms) and `%ProgramData%\Pulse Secure`; the rebranded "Ivanti Secure Access Client" may use an `Ivanti`-named folder. A corporate-managed VPN. (Exact path/filename varies by version — see return.)
+- **Reveals:** The corporate VPN **sign-in URLs**, realms and the saved username / connection names — an employer / remote-network identifier.
+- **Remove (user runs):** Almost always employer software — **prefer returning the device to IT.** If authorized: in the client delete each saved connection, uninstall via Settings > Apps (may be IT-locked), delete any leftover `%APPDATA%\Pulse Secure` / `%ProgramData%\Pulse Secure` (or the Ivanti-named folders), and empty the Recycle Bin.
+- **Survives:** The corporate gateway records and any enrollment on the organisation's side remain — only IT can remove them. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** No to delete the per-user connection store; service removal / `%ProgramData%` cleanup need elevation and may be IT-locked.
+
+### Twingate
+- **Where:** `%ProgramData%\Twingate` (service config and logs, including the Twingate network name) and `%LOCALAPPDATA%\Twingate` (client state/logs). Runs a service. (Exact split of config vs logs between the two not fully confirmed — see return.)
+- **Reveals:** The Twingate network (`company.twingate.com`), the signed-in account email, and the resources/connectors the owner reached — a corporate / zero-trust identifier.
+- **Remove (user runs):** In the Twingate client, sign out; quit and uninstall via Settings > Apps (removes the service); delete any leftover `%ProgramData%\Twingate` / `%LOCALAPPDATA%\Twingate` from an elevated session; empty the Recycle Bin.
+- **Survives:** The **device and account stay in the organisation's Twingate admin console (server-side)** until an admin removes them. SSD/HDD remnants until TRIM/overwrite.
+- **Admin:** Yes (service removal and `%ProgramData%` cleanup need elevation; managed setups are controlled by IT).
+
+---
+
+## Version-specific hives & deeper forensic/system traces
+
+Older Office and Acrobat version hives, plus deeper forensic, device, system and identity artifacts.
+
+### Microsoft Office 2013 recent files (File MRU and Place MRU)
+- **Where:** `HKCU:\Software\Microsoft\Office\15.0\Word\File MRU`, `...\Excel\File MRU`, `...\PowerPoint\File MRU`, and the matching `\Place MRU` key under each app (Office 2013 / version 15.0).
+- **Reveals:** Full paths and filenames of the last documents, workbooks and presentations the previous user opened or saved in Office 2013, plus the folders (including network and cloud paths) listed in Place MRU - exposing project names, client names and folder layout even after the files themselves are gone.
+- **Remove (user runs):** In each app open the File > Open (Recent) list, right-click an entry and choose "Clear unpinned items"; or delete the `Software\Microsoft\Office\15.0\<app>\File MRU` and `\Place MRU` keys in `regedit`.
+- **Survives:** The referenced documents themselves, wherever they are stored, and any recent-file list synced to the signed-in account's cloud "Recent" view. The 16.0 hive (if a newer Office is also installed) is a separate catalog entry.
+- **Admin:** no.
+
+### Microsoft Office 2010 recent files (File MRU)
+- **Where:** `HKCU:\Software\Microsoft\Office\14.0\Word\File MRU`, `...\Excel\File MRU`, `...\PowerPoint\File MRU` (Office 2010 / version 14.0).
+- **Reveals:** Paths and filenames of the last documents, workbooks and presentations opened in Office 2010 - the same personal trail of document names and locations as newer versions.
+- **Remove (user runs):** Clear the Recent list inside each app (File > Recent > right-click > clear, or File > Options > Advanced where you can set the number of recent documents to 0 and back); or delete the `Office\14.0\<app>\File MRU` keys in `regedit`.
+- **Survives:** The documents themselves. Note Office 2010 has no "Place MRU" (recent-folders list); that was added in Office 2013, so only File MRU applies to 14.0.
+- **Admin:** no.
+
+### Adobe Acrobat / Reader recent files (2020, 2017 and XI tracks)
+- **Where:** `HKCU:\Software\Adobe\Acrobat Reader\<track>\AVGeneral\cRecentFiles` and `HKCU:\Software\Adobe\Adobe Acrobat\<track>\AVGeneral\cRecentFiles`, where `<track>` is `2020`, `2017` or `11.0` (Acrobat/Reader 2020, 2017 and XI). Each `c1`, `c2` ... subkey holds one recent PDF path in its `tDIText` value.
+- **Reveals:** Names and full paths of the last PDFs the previous user opened in these older Acrobat/Reader versions - often statements, contracts, scans, tax or medical documents.
+- **Remove (user runs):** In the app open Edit > Preferences > Documents and set "Documents in recently used list" to 0 (or clear the Home/Recent list), then restore the setting; or delete the relevant `...\AVGeneral\cRecentFiles` key in `regedit`.
+- **Survives:** The PDF files themselves, and any copies in the app's Document Cloud / online recent list.
+- **Admin:** no.
+
+### Office 2013 signed-in identity
+- **Where:** `HKCU:\Software\Microsoft\Office\15.0\Common\Identity` (the `Identities` and `Profiles` subkeys).
+- **Reveals:** The Microsoft account or work/school (Microsoft 365) email address the previous user signed into Office 2013 with, and the associated display name.
+- **Remove (user runs):** In any Office 2013 app choose File > Account > Sign out; and remove the work or school account under Settings > Accounts > Access work or school. Deleting the `Office\15.0\Common\Identity` key in `regedit` clears the local copy.
+- **Survives:** The account on Microsoft's servers is untouched; token caches such as OneAuth and the WAM token broker (separate catalog entries) may keep remnants until cleared or a reboot. Office 2010 (14.0) had no built-in sign-in, so there is no 14.0 identity key.
+- **Admin:** no.
+
+### Outlook 2013 / 2010 mail profiles (older Office hives)
+- **Where:** Outlook 2013: `HKCU:\Software\Microsoft\Office\15.0\Outlook\Profiles\<profile>`. Outlook 2010: the account/profile store lives at `HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles\<profile>`, while `HKCU:\Software\Microsoft\Office\14.0\Outlook` holds that version's settings and recent lists.
+- **Reveals:** Configured email accounts - addresses, display names, incoming/outgoing server names, and the paths to the OST/PST data files - for these older Outlook versions.
+- **Remove (user runs):** Control Panel > Mail (Microsoft Outlook) > Show Profiles > select the profile > Remove, which deletes the account configuration. Delete the OST/PST data files separately (a separate catalog entry).
+- **Survives:** The PST/OST data files on disk until deleted; the mailbox on the mail server is unchanged.
+- **Admin:** no.
+
+### RecentApps (Windows 10 launch history)
+- **Where:** `HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps` and its `<AppId>\RecentItems` subkeys.
+- **Reveals:** Which applications the previous user launched, how many times and when (last-access time), and recently opened files per app - a compact activity trail where the key is present.
+- **Remove (user runs):** Delete the `...\Search\RecentApps` key in `regedit`.
+- **Survives:** The same launch information also lives in Prefetch, Amcache, UserAssist and other execution artifacts (separate catalog entries), so clearing this one key does not erase the trail. This key is primarily a Windows 10 artifact and is usually absent on Windows 11.
+- **Admin:** no.
+
+### Program Compatibility Assistant (PCA) execution logs
+- **Where:** `C:\Windows\appcompat\pca\PcaAppLaunchDic.txt`, `PcaGeneralDb0.txt` and `PcaGeneralDb1.txt`.
+- **Reveals:** Full paths, names and first/last run times of executables run on the machine - including programs launched from user folders, external drives or download locations - which can expose software the previous user installed or ran. Introduced in Windows 11, version 22H2.
+- **Remove (user runs):** Delete the files in `C:\Windows\appcompat\pca` from an elevated prompt; they regenerate as programs run.
+- **Survives:** The same execution history is mirrored in Prefetch and Amcache; the files repopulate with further use, and removal needs admin rights.
+- **Admin:** yes.
+
+### Compatibility Assistant Store (AppCompatFlags)
+- **Where:** `HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store` and `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store`.
+- **Reveals:** Paths of executables that triggered the compatibility assistant - another record of programs that ran on the PC, keyed by on-disk path (which can include the previous user's account name in the path).
+- **Remove (user runs):** Delete the `Compatibility Assistant\Store` subkey under HKCU in `regedit` (no admin); the HKLM copy needs an elevated `regedit`.
+- **Survives:** Other execution artifacts (ShimCache, Amcache, PCA, Prefetch) retain equivalent evidence; the HKLM half needs admin to remove.
+- **Admin:** no for HKCU, yes for HKLM.
+
+### Game controllers and joysticks (DirectInput)
+- **Where:** `HKCU:\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM` (and the related `DirectInput` subkey).
+- **Reveals:** Friendly names of game controllers, gamepads, flight sticks and racing wheels the previous user connected - indirectly exposing gaming habits and specific hardware owned.
+- **Remove (user runs):** Delete the `...\Joystick\OEM` subkeys in `regedit`; the "Set up USB game controllers" dialog also drops stale entries once devices are unplugged.
+- **Survives:** Nothing on a server (local-only data); related USB enumeration keys (a separate catalog entry) may still name the same controllers.
+- **Admin:** no.
+
+### Imaging devices - scanners and cameras (WIA class)
+- **Where:** `HKLM:\SYSTEM\CurrentControlSet\Control\Class\{6bdd1fc6-810f-11d0-bec7-08002be2092f}` - the Imaging Devices setup class; each numbered subkey carries a `FriendlyName`.
+- **Reveals:** Make and model of scanners, webcams and still cameras installed on the PC, showing hardware the previous user owned or connected.
+- **Remove (user runs):** Uninstall each device in Device Manager (use View > Show hidden devices to reveal disconnected ones), choosing "Delete the driver software" where offered - requires admin.
+- **Survives:** Files produced by those devices - the Scanned Documents and Camera Roll / Pictures folders (separate catalog entries) - remain; USB and portable-device enumeration keys may still reference the same hardware.
+- **Admin:** yes.
+
+### Portable device (MTP) enumeration - WpdBusEnumRoot
+- **Where:** `HKLM:\SYSTEM\CurrentControlSet\Enum\WpdBusEnumRoot`.
+- **Reveals:** Phones, cameras, music players and other MTP/PTP devices that were connected to the PC - friendly names and identifiers that can tie a specific personal device to this machine.
+- **Remove (user runs):** In Device Manager enable View > Show hidden devices, then uninstall the greyed-out portable devices (admin); or use a disk/privacy cleanup tool that clears PnP device history.
+- **Survives:** Thumbnails, jump lists and shellbags (separate catalog entries) may still reference media copied from those devices. This is the bus-level enumeration, deeper than the user-facing Windows Portable Devices list.
+- **Admin:** yes.
+
+### Bluetooth radio device store and pairing keys (BTHPORT)
+- **Where:** `HKLM:\SYSTEM\CurrentControlSet\Services\BTHPORT\Parameters\Devices` (each subkey is a paired device's address, with a `Name` value); pairing link keys sit under `...\Parameters\Keys` and are readable only by SYSTEM.
+- **Reveals:** Hardware addresses and names of Bluetooth devices the previous user paired - headphones, keyboards, phones, wearables - at the radio level, beneath the Settings paired-device list.
+- **Remove (user runs):** Remove each device under Settings > Bluetooth & devices (which clears its subkey and link key); a leftover radio entry can be deleted with an elevated `regedit`.
+- **Survives:** Entries can linger until a reboot; the `Keys` subkey needs SYSTEM/admin access to inspect, and a full reset is the surest clear.
+- **Admin:** yes.
+
+### Reliability Monitor history (RAC)
+- **Where:** `C:\ProgramData\Microsoft\RAC\StateData` and `C:\ProgramData\Microsoft\RAC\PublishedData` (including `RacWmiDatabase.sdf`).
+- **Reveals:** The Reliability Monitor timeline - application installs and uninstalls, app crashes and hangs, and update events by name and date - which indirectly lists software the previous user ran and when.
+- **Remove (user runs):** The data is rebuilt from the event logs; to clear it, disable the Reliability scheduled task and delete the files under `C:\ProgramData\Microsoft\RAC` from an elevated prompt.
+- **Survives:** The underlying Application and System event logs (a separate catalog entry) still hold the source events, so Reliability Monitor repopulates from them; needs admin.
+- **Admin:** yes.
+
+### Windows Setup logs (Panther)
+- **Where:** `C:\Windows\Panther\` (for example `setupact.log`, `setuperr.log`, `UnattendGC\`), plus any `C:\$WINDOWS.~BT\Sources\Panther` left from an in-place upgrade.
+- **Reveals:** Installation and upgrade details - computer name, the account/username created at setup, edition and product-key-related entries, and timestamps - captured when Windows was installed or upgraded.
+- **Remove (user runs):** Run Disk Cleanup and tick "Windows upgrade log files" (and "Windows ESD installation files"); or delete the `C:\Windows\Panther` contents from an elevated prompt.
+- **Survives:** Copies may also exist inside `Windows.old` (a separate catalog entry); removal needs admin.
+- **Admin:** yes.
+
+### Component-Based Servicing (CBS) logs
+- **Where:** `C:\Windows\Logs\CBS\` (`CBS.log` and its archived `.cab` copies).
+- **Reveals:** A servicing history of installed, updated and removed Windows packages and features, by name and date. This is mostly system-configuration history rather than strongly personal data, but it still shows how the machine was maintained and used.
+- **Remove (user runs):** Run Disk Cleanup, or delete the contents of `C:\Windows\Logs\CBS` from an elevated prompt; the folder is recreated by Windows servicing.
+- **Survives:** Regenerates as updates install; needs admin to clear.
+- **Admin:** yes.
+
+### Live kernel reports (LiveKernelReports)
+- **Where:** `C:\Windows\LiveKernelReports\` (`*.dmp` files).
+- **Reveals:** Live kernel dumps captured after driver or hardware faults; these memory snapshots can contain fragments of whatever was in memory at the time, and the filenames and dates show when problems occurred on the previous user's system.
+- **Remove (user runs):** Run Disk Cleanup (System error memory dump / minidump files), or delete the `*.dmp` files under `C:\Windows\LiveKernelReports` from an elevated prompt.
+- **Survives:** New dumps are written on future faults; removal needs admin.
+- **Admin:** yes.
+
+### PowerShell transcripts
+- **Where:** `%USERPROFILE%\Documents\PowerShell\transcripts\`, and loose `PowerShell_transcript.*.txt` files in `%USERPROFILE%\Documents` (or whatever folder was configured). Present only if PowerShell transcription was turned on.
+- **Reveals:** A full typed record of PowerShell sessions - every command and its output - which can expose paths, machine and account names, scripts and anything the commands printed.
+- **Remove (user runs):** Delete the transcript `.txt` files; turn transcription off (Group Policy "Turn on PowerShell Transcription", or the corresponding `...\PowerShell\Transcription` registry value) to stop new ones.
+- **Survives:** This is separate from PSReadLine command history (a separate catalog entry), which must be cleared on its own; transcripts exist only where transcription was enabled.
+- **Admin:** no.
+
+### Work Folders
+- **Where:** `%USERPROFILE%\Work Folders` (default local path) and the configuration under `HKCU:\Software\Microsoft\Windows\CurrentVersion\WorkFolders` / `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WorkFolders`.
+- **Reveals:** Enterprise/work files synced to this PC through the Work Folders feature, plus the work account and the server URL they came from - exposing an employer relationship and work documents.
+- **Remove (user runs):** Control Panel > Work Folders > "Stop using Work Folders", then delete the local `Work Folders` directory; remove the associated work account under Settings > Accounts if one is present.
+- **Survives:** The copy on the employer's Work Folders server is unaffected; local files remain until the folder is deleted.
+- **Admin:** no.
+
+### Outlook Autodiscover cache
+- **Where:** `HKCU:\Software\Microsoft\Office\16.0\Outlook\AutoDiscover` (the value names are the email addresses that were looked up) and cached autodiscover XML under `%LOCALAPPDATA%\Microsoft\Outlook`.
+- **Reveals:** Email address(es) the previous user configured and the mail server or organization they resolved to - a direct link to their identity and their employer or provider.
+- **Remove (user runs):** Delete the values under the `Outlook\AutoDiscover` key and any cached autodiscover XML files; removing the Outlook mail profile (a separate catalog entry) also clears these.
+- **Survives:** The mailbox and account on the mail server are unchanged; the same email address also appears in autocomplete and profile artifacts.
+- **Admin:** no.
+
+### Cloud Experience Host account cache
+- **Where:** `%LOCALAPPDATA%\Packages\Microsoft.Windows.CloudExperienceHost_cw5n1h2txyewy\` (its `AC\INetCache`, `LocalState` and `LocalCache` subfolders).
+- **Reveals:** Web-view remnants from adding Microsoft or work/school accounts - cached sign-in pages, cookies, and the account email or tenant used during "Add account" and out-of-box flows. This is transient UI cache; the durable tokens live in the AAD broker and WAM stores (separate catalog entries).
+- **Remove (user runs):** Remove the work/school or Microsoft account under Settings > Accounts; clear the package data via Settings > Apps if the host is listed, or delete the contents of the package's `AC\INetCache`, `LocalState` and `LocalCache` folders.
+- **Survives:** The account on Microsoft's servers, and the durable token caches (AAD broker / WAM); resetting the package just recreates empty folders.
+- **Admin:** no.
 
 ---
 
