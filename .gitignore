@@ -1,0 +1,13 @@
+# WipeWise scan outputs — may contain example names or local data; never commit
+wipewise-scan*.json
+*.scan.json
+scan*.json
+
+# OS / editor noise
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.tmp
