@@ -21,7 +21,7 @@ compatibility: >-
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.1.1"
+  version: "0.1.2"
   stage: audit-and-guidance
 ---
 
@@ -36,7 +36,7 @@ to erase**.
 ## What this version does and does not do
 
 **Does (v0.1):**
-- Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 18 categories (see `references/trace-catalog.md`, which maps 370+ distinct artifacts), with sizes and counts.
+- Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 20 categories — including other local user accounts and other drives/volumes, not just the signed-in account on `C:` (see `references/trace-catalog.md`, which maps 370+ distinct artifacts), with sizes and counts.
 - Lists installed programs so the user can decide which to remove.
 - Walks the account / cloud sign-out and de-link checklist.
 - Gives precise, user-run cleanup steps for each category.
@@ -75,6 +75,7 @@ to erase**.
 
 ### Step 2 — Present categories
 - Show a table: category, item count, total size, and a one-line note.
+- Category sizes can overlap when one folder sits inside another (e.g. virtual-machine disks inside Documents), so present them as per-category views, not a grand total to add up. A few broad containers (all user profiles, the Store `Packages` folder) are reported as a top-level count, not a size.
 - For any category the user wants to see, show up to three examples (leaf names only) and point to `references/trace-catalog.md` for what that category reveals and how it is removed.
 - Let the user mark which categories they want to clean.
 

@@ -4,6 +4,22 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-10-29
+
+Structural coverage and an accuracy fix. Still **read-only and guidance-only.**
+
+### Added
+- Two dynamic categories so the scan is no longer limited to the signed-in user
+  on `C:`: **other user accounts** (enumerates every real local profile under
+  `C:\Users`) and **other drives & volumes** (each non-system/removable volume's
+  Recycle Bin, System Volume Information, and top-level data).
+
+### Fixed
+- Broad container folders (`C:\Users`, the Store `Packages` folder, per-volume
+  `System Volume Information`) are now reported as a top-level count instead of
+  being deep-sized — previously they hugely double-counted data already measured
+  by other categories (a live scan dropped from ~623 GB to ~284 GB).
+
 ## [0.1.1] - 2026-10-29
 
 Catalog and scanner coverage expansion. Still **read-only and guidance-only.**
@@ -50,5 +66,6 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.1.2]: https://github.com/keraattin/wipewise/releases/tag/v0.1.2
 [0.1.1]: https://github.com/keraattin/wipewise/releases/tag/v0.1.1
 [0.1.0]: https://github.com/keraattin/wipewise/releases/tag/v0.1.0
