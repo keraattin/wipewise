@@ -4,6 +4,27 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-10-29
+
+Catalog and scanner coverage expansion. Still **read-only and guidance-only.**
+
+### Added
+- Greatly expanded `references/trace-catalog.md`: 370+ distinct Windows 10/11
+  artifacts across 18 categories — now including cloud-storage clients, finance
+  and tax files, cryptocurrency wallets and desktop authenticators, virtual
+  machines / WSL / backup images, database and remote-session clients, more
+  browsers, messengers, media and capture apps, forensic execution artifacts,
+  attached-device history, and a cross-cutting section on other user accounts,
+  other volumes, and SSD recoverability.
+
+### Changed
+- `scripts/Invoke-WipeWiseScan.ps1` rewritten around a unified probe table of
+  **403 read-only probes** across those categories, plus live installed-program
+  enumeration. It now reads **only** file/folder existence and sizes and
+  registry key counts and **runs no external commands** (previous `netsh` /
+  `cmdkey` calls were replaced with equivalent read-only folder/registry
+  probes).
+
 ## [0.1.0] - 2026-10-29
 
 Initial public release. **Read-only and guidance-only.**
@@ -29,4 +50,5 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.1.1]: https://github.com/keraattin/wipewise/releases/tag/v0.1.1
 [0.1.0]: https://github.com/keraattin/wipewise/releases/tag/v0.1.0

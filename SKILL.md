@@ -7,9 +7,11 @@ description: >-
   reset personal data, remove their traces, clean a PC for sale or handover,
   check what personal information is on the machine, or meet a data-deletion
   duty (such as GDPR or KVKK) for a device they own. It scans read-only and
-  reports findings by category (personal files, browsers, saved passwords and
-  Wi-Fi keys, app data, activity history, system traces), lists installed
-  programs, and gives the account and cloud sign-out checklist plus step-by-step
+  reports findings across many categories (files, cloud storage, browsers,
+  messaging and email, apps, finance and crypto wallets, virtual machines,
+  credentials and developer secrets, activity and forensic traces, devices,
+  and system leftovers), lists installed programs, and gives the account and
+  cloud sign-out checklist plus step-by-step
   cleanup and verification guidance. It keeps Windows installed, never reinstalls
   the OS, and never deletes anything on its own: the user confirms and performs
   each removal.
@@ -19,7 +21,7 @@ compatibility: >-
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   stage: audit-and-guidance
 ---
 
@@ -34,7 +36,7 @@ to erase**.
 ## What this version does and does not do
 
 **Does (v0.1):**
-- Scans the machine **read-only** and reports what personal data and traces exist, by category, with sizes and counts.
+- Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 18 categories (see `references/trace-catalog.md`, which maps 370+ distinct artifacts), with sizes and counts.
 - Lists installed programs so the user can decide which to remove.
 - Walks the account / cloud sign-out and de-link checklist.
 - Gives precise, user-run cleanup steps for each category.

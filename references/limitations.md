@@ -18,6 +18,10 @@ WipeWise's goal is that the previous owner's data is not left behind — ideally
   - Intel AMT/vPro provisioning; Absolute/Computrace anti-theft firmware.
   - **Match-on-chip fingerprint templates** stored on the sensor module — removing Windows Hello in Settings is what clears these; deleting files does not.
 - **Autopilot / Intune / Entra registration** (work devices) lives in the cloud and must be removed by the organization.
+- **Other local user accounts.** Every profile under `C:\Users` has its own files, browser profiles, app data and registry hive. Cleaning the signed-in account leaves the others untouched; each must be cleaned or the account deleted separately (needs Administrator).
+- **Secondary and removable volumes.** D:/E:/USB drives each have their own `$Recycle.Bin`, `System Volume Information` (shadow copies) and user data. Cleaning `C:` does not touch them.
+- **Shadow copies, restore points and `Windows.old`.** System Restore / Volume Shadow Copies and a `Windows.old` folder keep older copies of files and registry hives even after a live clean; remove them via Disk Cleanup / System Protection (admin), not by deleting files.
+- **Registry-hive residue.** `NTUSER.DAT`/`USRCLASS.DAT` transaction logs (`.LOG1`/`.LOG2`), `RegBack`, and copies inside restore points retain registry-based traces after the live keys are cleared.
 
 ## Side effects to warn about
 

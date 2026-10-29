@@ -28,8 +28,8 @@ Windows' built-in **"Reset this PC"** does not meet recognized data-erasure stan
 
 | Capability | Details |
 |---|---|
-| Read-only scan | Reports what personal data and traces exist, by category, with sizes and counts |
-| Category report | Personal files, browsers, saved passwords and Wi-Fi keys, app data, activity history, Recall/Copilot, network, system traces |
+| Read-only scan | Reports what personal data and traces exist, by category, with sizes and counts — reading only files/folders and registry key counts, running no external commands |
+| Category report | 18 categories / 370+ documented artifacts: personal files & cloud storage, browsers, messaging & email, apps/media/games, finance & crypto wallets, virtual machines & backups, accounts & identity, credentials & developer secrets, network, devices, activity & forensic traces, Recall/Copilot, system leftovers |
 | Installed programs | Lists programs to sign out of and uninstall |
 | De-link checklist | Accounts, licenses, and cloud links to sign out of — in the right order, so you do not get locked out |
 | Guided cleanup | Exact, user-run steps to clear each category you approve |
