@@ -21,7 +21,7 @@ compatibility: >-
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.1.3"
+  version: "0.1.4"
   stage: audit-and-guidance
 ---
 
@@ -36,7 +36,7 @@ to erase**.
 ## What this version does and does not do
 
 **Does (v0.1):**
-- Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 20 categories — including other local user accounts and other drives/volumes, not just the signed-in account on `C:` (see `references/trace-catalog.md`, which maps 600+ distinct artifacts), with sizes and counts.
+- Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 20 categories — including other local user accounts and other drives/volumes, not just the signed-in account on `C:` (see `references/trace-catalog.md`, which maps 700+ distinct artifacts), with sizes and counts.
 - Lists installed programs so the user can decide which to remove.
 - Walks the account / cloud sign-out and de-link checklist.
 - Gives precise, user-run cleanup steps for each category.

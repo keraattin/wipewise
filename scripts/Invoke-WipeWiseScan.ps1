@@ -157,7 +157,7 @@ $Plan = @(
 )
 
 $Probes = @(
-    # --- personal-files (24) ---
+    # --- personal-files (25) ---
     @{ cat='personal-files'; name='Desktop'; path='%USERPROFILE%\Desktop'; kind='folder'; admin=$false; enum=$false; note='Files/shortcuts left on screen; may be redirected into OneDrive via KFM.' }
     @{ cat='personal-files'; name='Documents'; path='%USERPROFILE%\Documents'; kind='folder'; admin=$false; enum=$false; note='Primary document store; common KFM target; holds Outlook Files, My Games, Scanned Documents.' }
     @{ cat='personal-files'; name='Downloads'; path='%USERPROFILE%\Downloads'; kind='folder'; admin=$false; enum=$false; note='Installers, invoices, attachments, Nearby-Sharing receipts; often richest unreviewed folder.' }
@@ -182,6 +182,7 @@ $Probes = @(
     @{ cat='personal-files'; name='Sound recordings'; path='%USERPROFILE%\Documents\Sound recordings'; kind='folder'; admin=$false; enum=$false; note='Sound Recorder / Voice Recorder clips (older: Sound Recordings).' }
     @{ cat='personal-files'; name='Scanned Documents'; path='%USERPROFILE%\Documents\Scanned Documents'; kind='folder'; admin=$false; enum=$false; note='Windows Fax and Scan output; modern Scan app may use Pictures\Scans.' }
     @{ cat='personal-files'; name='Account pictures'; path='%APPDATA%\Microsoft\Windows\AccountPictures'; kind='folder'; admin=$false; enum=$false; note='Images set as the user account photo.' }
+    @{ cat='personal-files'; name='Recycle Bin (non-system drives)'; path='D:\$Recycle.Bin'; kind='folder'; admin=$false; enum=$false; note='Per non-system/removable NTFS drive; enumerate drive letters; existence + item count only. System drive already cataloged.' }
     # --- cloud-storage (44) ---
     @{ cat='cloud-storage'; name='OneDrive personal folder'; path='%USERPROFILE%\OneDrive'; kind='folder'; admin=$false; enum=$false; note='Local copy of personal OneDrive; cloud copy survives until unlinked and deleted server-side.' }
     @{ cat='cloud-storage'; name='OneDrive settings & cache'; path='%LOCALAPPDATA%\Microsoft\OneDrive'; kind='folder'; admin=$false; enum=$false; note='Client state/logs; settings\ reveals which accounts synced and their folder paths.' }
@@ -227,7 +228,7 @@ $Probes = @(
     @{ cat='cloud-storage'; name='Egnyte Desktop'; path='%LOCALAPPDATA%\Egnyte Connect'; kind='folder'; admin=$false; enum=$false; note='Classic ''Egnyte Connect''; newer ''Egnyte Desktop App'' uses %LOCALAPPDATA%\Egnyte + %ProgramData%\Egnyte. Reveals company.egnyte.com domain.' }
     @{ cat='cloud-storage'; name='Citrix ShareFile'; path='%LOCALAPPDATA%\Citrix\ShareFile'; kind='folder'; admin=$false; enum=$false; note='ShareFile Drive / ''Citrix Files for Windows''; may be a ''Citrix Files'' subfolder or %APPDATA%\Citrix\ShareFile. Reveals company.sharefile.com subdomain.' }
     @{ cat='cloud-storage'; name='odrive'; path='%USERPROFILE%\.odrive'; kind='folder'; admin=$false; enum=$false; note='Agent config under .odrive\common maps every linked cloud account (Drive/Dropbox/OneDrive/...); default sync folder %USERPROFILE%\odrive.' }
-    # --- browsers (71) ---
+    # --- browsers (75) ---
     @{ cat='browsers'; name='Edge User Data root'; path='%LOCALAPPDATA%\Microsoft\Edge\User Data'; kind='folder'; admin=$false; enum=$false; note='Presence and profile subfolder count show Edge usage and profile count.' }
     @{ cat='browsers'; name='Chrome User Data root'; path='%LOCALAPPDATA%\Google\Chrome\User Data'; kind='folder'; admin=$false; enum=$false; note='Presence and Default/Profile N count show Chrome usage.' }
     @{ cat='browsers'; name='Brave User Data root'; path='%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data'; kind='folder'; admin=$false; enum=$false; note='Presence and profile count show Brave usage; built-in wallet keyring lives per-profile.' }
@@ -299,7 +300,11 @@ $Probes = @(
     @{ cat='browsers'; name='qutebrowser data'; path='%LOCALAPPDATA%\qutebrowser\data'; kind='folder'; admin=$false; enum=$false; note='qutebrowser history.sqlite/cookies/sessions; config separately in %APPDATA%\qutebrowser\config.' }
     @{ cat='browsers'; name='Min data'; path='%APPDATA%\Min'; kind='folder'; admin=$false; enum=$false; note='Min (Electron) history/full-text index, tasks/tab groups, bookmarks, cookies.' }
     @{ cat='browsers'; name='Opera Crypto profile'; path='%APPDATA%\Opera Software\Opera Crypto'; kind='folder'; admin=$false; enum=$false; note='Opera Crypto Browser profile + built-in wallet refs; cache under %LOCALAPPDATA%. Opera One reuses the existing Opera Stable folder.' }
-    # --- messaging (50) ---
+    @{ cat='browsers'; name='UC Browser profile'; path='%APPDATA%\UCBrowser'; kind='folder'; admin=$false; enum=$false; note='Discontinued UCWeb PC browser; Chromium-style profile. Folder/location may vary by version. Existence only.' }
+    @{ cat='browsers'; name='Sogou Explorer profile'; path='%APPDATA%\SogouExplorer'; kind='folder'; admin=$false; enum=$false; note='Chromium-based Sogou browser profile; some data may be under %LOCALAPPDATA%. Existence only.' }
+    @{ cat='browsers'; name='Sleipnir profile'; path='%APPDATA%\Fenrir Inc'; kind='folder'; admin=$false; enum=$false; note='Fenrir Inc vendor folder containing the Sleipnir profile; exact subfolder varies by version. Existence only.' }
+    @{ cat='browsers'; name='Lunascape profile'; path='%APPDATA%\Lunascape'; kind='folder'; admin=$false; enum=$false; note='Multi-engine browser profile (e.g. a Lunascape6 subfolder). Existence only.' }
+    # --- messaging (59) ---
     @{ cat='messaging'; name='Teams (new) package'; path='%LOCALAPPDATA%\Packages\MSTeams_8wekyb3d8bbwe'; kind='folder'; admin=$false; enum=$false; note='New Teams MSIX; LocalCache/LocalState hold account, cached chats and media.' }
     @{ cat='messaging'; name='Teams (classic) data'; path='%APPDATA%\Microsoft\Teams'; kind='folder'; admin=$false; enum=$false; note='Legacy Electron Teams cache, IndexedDB, logs; persists after migration.' }
     @{ cat='messaging'; name='Slack data'; path='%APPDATA%\Slack'; kind='folder'; admin=$false; enum=$false; note='Direct-download build: workspaces, cache, local storage, drafts.' }
@@ -350,7 +355,16 @@ $Probes = @(
     @{ cat='messaging'; name='Caprine data'; path='%APPDATA%\Caprine'; kind='folder'; admin=$false; enum=$false; note='Caprine (Facebook Messenger Electron wrapper): logged-in FB session, cookies, cached conversations.' }
     @{ cat='messaging'; name='Ferdi data'; path='%APPDATA%\Ferdi'; kind='folder'; admin=$false; enum=$false; note='Ferdi service-wrapper: per-service logins/cookies/cache. Distinct folder from Ferdium/Franz/Rambox.' }
     @{ cat='messaging'; name='Phone Link / Your Phone'; path='%LOCALAPPDATA%\Packages\Microsoft.YourPhone_8wekyb3d8bbwe'; kind='folder'; admin=$false; enum=$false; note='SMS/MMS, photos, call history, contacts, notifications mirrored from linked phone + MS account (verified package on Win11)' }
-    # --- email (25) ---
+    @{ cat='messaging'; name='Tencent QQ chat store'; path='%USERPROFILE%\Documents\Tencent Files'; kind='folder'; admin=$false; enum=$false; note='Per-account subfolders hold QQ chat DBs and received files (QQNT adds nt_qq). Existence/count only.' }
+    @{ cat='messaging'; name='Tencent QQ settings key'; path='HKCU:\Software\Tencent\QQ'; kind='registry'; admin=$false; enum=$false; note='QQ config/account hints; presence only.' }
+    @{ cat='messaging'; name='TIM settings key'; path='HKCU:\Software\Tencent\TIM'; kind='registry'; admin=$false; enum=$false; note='TIM shares the Documents\Tencent Files chat layout with QQ; registry presence indicates TIM was installed.' }
+    @{ cat='messaging'; name='Wickr local store'; path='%LOCALAPPDATA%\Wickr'; kind='folder'; admin=$false; enum=$false; note='Encrypted local store; existence only. Some versions use %APPDATA%\Wickr, LLC.' }
+    @{ cat='messaging'; name='Chanty app data'; path='%APPDATA%\Chanty'; kind='folder'; admin=$false; enum=$false; note='Electron cache/session; presence only.' }
+    @{ cat='messaging'; name='Flock app data'; path='%APPDATA%\Flock'; kind='folder'; admin=$false; enum=$false; note='Flock team-messenger Electron data; presence only (not the legacy Flock browser).' }
+    @{ cat='messaging'; name='Zulip Desktop app data'; path='%APPDATA%\Zulip'; kind='folder'; admin=$false; enum=$false; note='Added orgs/session/cache; presence only.' }
+    @{ cat='messaging'; name='Nheko cache folder'; path='%LOCALAPPDATA%\nheko'; kind='folder'; admin=$false; enum=$false; note='Qt cache (lmdb) parent folder; org subfolder may differ (e.g. nheko-reborn). Existence only.' }
+    @{ cat='messaging'; name='Nheko settings key'; path='HKCU:\Software\nheko'; kind='registry'; admin=$false; enum=$false; note='Qt QSettings for Nheko; presence only.' }
+    # --- email (27) ---
     @{ cat='email'; name='Outlook classic OST/PST'; path='%LOCALAPPDATA%\Microsoft\Outlook'; kind='folder'; admin=$false; enum=$false; note='Cached mailbox .ost and older default .pst; offline mailbox copy.' }
     @{ cat='email'; name='Outlook PST (Documents default)'; path='%USERPROFILE%\Documents\Outlook Files'; kind='folder'; admin=$false; enum=$false; note='Default location for user-created .pst archives; may be the only copy of archived mail.' }
     @{ cat='email'; name='Outlook autocomplete (RoamCache)'; path='%LOCALAPPDATA%\Microsoft\Outlook\RoamCache'; kind='folder'; admin=$false; enum=$false; note='Stream_Autocomplete_*.dat nickname cache: everyone the owner has emailed.' }
@@ -376,7 +390,9 @@ $Probes = @(
     @{ cat='email'; name='Zimbra Desktop data'; path='%APPDATA%\Zimbra'; kind='folder'; admin=$false; enum=$false; note='Legacy/EOL Zimbra Desktop account state; the bulk mail/contacts/calendar store is chosen at install (install dir or user folder).' }
     @{ cat='email'; name='Outlook 2013 / 2010 mail profiles'; path='HKCU:\Software\Microsoft\Office\15.0\Outlook\Profiles'; kind='registry'; admin=$false; enum=$false; note='2010 profiles live under Windows Messaging Subsystem\Profiles; exposes accounts, servers, OST/PST paths. Existence only.' }
     @{ cat='email'; name='Outlook Autodiscover cache'; path='HKCU:\Software\Microsoft\Office\16.0\Outlook\AutoDiscover'; kind='registry'; admin=$false; enum=$false; note='Value names are looked-up email addresses; also XML under %LOCALAPPDATA%\Microsoft\Outlook. Count/existence only.' }
-    # --- apps-media-gaming (135) ---
+    @{ cat='email'; name='BlueMail app data'; path='%APPDATA%\BlueMail'; kind='folder'; admin=$false; enum=$false; note='Electron client cache/accounts; presence only.' }
+    @{ cat='email'; name='Eudora data directory'; path='%APPDATA%\Qualcomm\Eudora'; kind='folder'; admin=$false; enum=$false; note='Legacy POP-era mail store (.mbx/.toc); older installs may instead keep data in the program folder. Existence only.' }
+    # --- apps-media-gaming (161) ---
     @{ cat='apps-media-gaming'; name='Office Word recent files (MRU)'; path='HKCU:\Software\Microsoft\Office\16.0\Word\File MRU'; kind='registry'; admin=$false; enum=$false; note='Recent document paths; also Excel/PowerPoint/Access and Place MRU keys under 16.0.' }
     @{ cat='apps-media-gaming'; name='Office recent-document shortcuts'; path='%APPDATA%\Microsoft\Office\Recent'; kind='folder'; admin=$false; enum=$false; note='.lnk shortcuts to recently opened Office files.' }
     @{ cat='apps-media-gaming'; name='Office Document Cache'; path='%LOCALAPPDATA%\Microsoft\Office\16.0\OfficeFileCache'; kind='folder'; admin=$false; enum=$false; note='Locally cached copies of OneDrive/SharePoint docs edited in Office.' }
@@ -512,7 +528,33 @@ $Probes = @(
     @{ cat='apps-media-gaming'; name='Office 2013 File MRU / Place MRU (Word, Excel, PowerPoint)'; path='HKCU:\Software\Microsoft\Office\15.0\Word\File MRU'; kind='registry'; admin=$false; enum=$false; note='Version 15.0; also Excel and PowerPoint; Place MRU holds recent folders incl. network/cloud paths. Count/existence only.' }
     @{ cat='apps-media-gaming'; name='Office 2010 File MRU (Word, Excel, PowerPoint)'; path='HKCU:\Software\Microsoft\Office\14.0\Word\File MRU'; kind='registry'; admin=$false; enum=$false; note='Version 14.0; also Excel and PowerPoint; no Place MRU in 2010. Count/existence only.' }
     @{ cat='apps-media-gaming'; name='Acrobat/Reader recent files (2020, 2017, 11.0 tracks)'; path='HKCU:\Software\Adobe\Acrobat Reader\2020\AVGeneral\cRecentFiles'; kind='registry'; admin=$false; enum=$false; note='Also tracks 2017 and 11.0, and the ''Adobe Acrobat'' full-product paths; tDIText holds PDF paths. Count/existence only.' }
-    # --- finance-crypto (30) ---
+    @{ cat='apps-media-gaming'; name='AutoCAD recent documents'; path='HKCU:\Software\Autodesk\AutoCAD'; kind='registry'; admin=$false; enum=$false; note='Per-release subkeys R<rel>\ACAD-<product:locale>\Recent File List hold recent DWG paths; existence/count only.' }
+    @{ cat='apps-media-gaming'; name='SolidWorks recent documents'; path='HKCU:\Software\SolidWorks'; kind='registry'; admin=$false; enum=$false; note='SOLIDWORKS <year> version branch backs the Welcome-screen recent-docs list; existence only.' }
+    @{ cat='apps-media-gaming'; name='SketchUp recent files'; path='%APPDATA%\SketchUp'; kind='folder'; admin=$false; enum=$false; note='SketchUp <year>\SketchUp\PrivatePreferences.json holds recent .skp list; existence only.' }
+    @{ cat='apps-media-gaming'; name='FreeCAD recent files'; path='%APPDATA%\FreeCAD'; kind='folder'; admin=$false; enum=$false; note='user.cfg RecentFiles group lists recent .FCStd paths; existence only.' }
+    @{ cat='apps-media-gaming'; name='Rhino recent files'; path='%APPDATA%\McNeel\Rhinoceros'; kind='folder'; admin=$false; enum=$false; note='<version>\settings\settings-Scheme__Default.xml holds recent .3dm MRU; existence only.' }
+    @{ cat='apps-media-gaming'; name='Revit journals + recent models'; path='%LOCALAPPDATA%\Autodesk\Revit'; kind='folder'; admin=$false; enum=$false; note='Autodesk Revit <year>\Journals log opened/saved model paths; Revit.ini (in %APPDATA%) holds recent list; existence only.' }
+    @{ cat='apps-media-gaming'; name='Cinema 4D recent scenes'; path='%APPDATA%\Maxon'; kind='folder'; admin=$false; enum=$false; note='Version_hash\prefs holds recent .c4d list (older builds use %APPDATA%\MAXON); existence only.' }
+    @{ cat='apps-media-gaming'; name='Autodesk Maya recent files/projects'; path='%USERPROFILE%\Documents\maya'; kind='folder'; admin=$false; enum=$false; note='<version>\prefs\userPrefs.mel stores RecentFilesList/RecentProjectsList optionVars; existence only.' }
+    @{ cat='apps-media-gaming'; name='Houdini recent files'; path='%USERPROFILE%\Documents\houdini<version>'; kind='folder'; admin=$false; enum=$false; note='houdini<major.minor> prefs dir; file.history holds recent .hip paths; existence only.' }
+    @{ cat='apps-media-gaming'; name='PreSonus Studio One recent songs'; path='%APPDATA%\PreSonus'; kind='folder'; admin=$false; enum=$false; note='Studio One <version> app data backs Start-page recents; songs default to Documents\Studio One; existence only.' }
+    @{ cat='apps-media-gaming'; name='Steinberg Cubase/Nuendo recent projects'; path='%APPDATA%\Steinberg'; kind='folder'; admin=$false; enum=$false; note='Cubase <version> / Nuendo <version> prefs back the Hub recent list; existence only.' }
+    @{ cat='apps-media-gaming'; name='Bitwig Studio recent projects'; path='%USERPROFILE%\Documents\Bitwig Studio'; kind='folder'; admin=$false; enum=$false; note='Projects library; dashboard recents stored in %LOCALAPPDATA%\Bitwig Studio; existence only.' }
+    @{ cat='apps-media-gaming'; name='darktable image catalog'; path='%LOCALAPPDATA%\darktable'; kind='folder'; admin=$false; enum=$false; note='library.db indexes every imported image''s path/metadata/location tags; existence/count only.' }
+    @{ cat='apps-media-gaming'; name='VEGAS Pro recent projects'; path='HKCU:\Software\VEGAS Creative Software\VEGAS Pro'; kind='registry'; admin=$false; enum=$false; note='MAGIX era (VEGAS Pro 14+); Sony era uses HKCU\Software\Sony Creative Software\Vegas Pro; holds recent .veg list; existence only.' }
+    @{ cat='apps-media-gaming'; name='MATLAB recents + command history'; path='%APPDATA%\MathWorks\MATLAB'; kind='folder'; admin=$false; enum=$false; note='R<year><a|b> holds History.xml (command log) and recent-file state; probe checks existence only, never reads history content.' }
+    @{ cat='apps-media-gaming'; name='RStudio recent projects + history'; path='%LOCALAPPDATA%\RStudio'; kind='folder'; admin=$false; enum=$false; note='monitored\lists\project_mru and history_database; older builds RStudio-Desktop; existence only, no content read.' }
+    @{ cat='apps-media-gaming'; name='IPython/Jupyter history'; path='%USERPROFILE%\.ipython\profile_default'; kind='folder'; admin=$false; enum=$false; note='history.sqlite logs every executed line; probe checks existence only, never reads entries.' }
+    @{ cat='apps-media-gaming'; name='Wolfram Mathematica recent notebooks'; path='%APPDATA%\Mathematica'; kind='folder'; admin=$false; enum=$false; note='FrontEnd preferences hold Open Recent list of .nb/.wl paths; existence only.' }
+    @{ cat='apps-media-gaming'; name='KiCad recent projects/files'; path='%APPDATA%\kicad'; kind='folder'; admin=$false; enum=$false; note='<version> JSON config (kicad_common.json, eeschema.json, pcbnew.json) lists recent projects/boards; existence only.' }
+    @{ cat='apps-media-gaming'; name='LTspice recent schematics'; path='HKCU:\Software\LTC\LTspiceXVII'; kind='registry'; admin=$false; enum=$false; note='Classic LTspice XVII MRU of .asc files; newer ADI builds use a different key (e.g. HKCU\Software\Analog Devices\LTspice); existence only.' }
+    @{ cat='apps-media-gaming'; name='Anki collection & profiles'; path='%APPDATA%\Anki2'; kind='folder'; admin=$false; enum=$false; note='Existence of Anki2; count profile folders and collection.anki2/collection.media; never read card contents or the AnkiWeb token in prefs21.db.' }
+    @{ cat='apps-media-gaming'; name='Zotero data directory'; path='%USERPROFILE%\Zotero'; kind='folder'; admin=$false; enum=$false; note='Existence of zotero.sqlite and storage\ (default data dir; user may have set a custom path); counts only, never read the library.' }
+    @{ cat='apps-media-gaming'; name='Zotero profile'; path='%APPDATA%\Zotero'; kind='folder'; admin=$false; enum=$false; note='Existence of app profile under Zotero\Zotero\Profiles (holds account/sync settings); counts only.' }
+    @{ cat='apps-media-gaming'; name='Mendeley Desktop database'; path='%LOCALAPPDATA%\Mendeley Ltd'; kind='folder'; admin=$false; enum=$false; note='Existence of per-account .sqlite under Mendeley Desktop (filename encodes the account email); report presence only, never the address or contents.' }
+    @{ cat='apps-media-gaming'; name='Mendeley Reference Manager data'; path='%APPDATA%\Mendeley Reference Manager'; kind='folder'; admin=$false; enum=$false; note='Existence of the newer Electron client''s data; counts only.' }
+    @{ cat='apps-media-gaming'; name='EndNote recent-libraries list'; path='HKCU:\Software\ISI ResearchSoft'; kind='registry'; admin=$false; enum=$false; note='Existence of the EndNote vendor key / recent-libraries MRU (confirm vendor key on the machine); counts only, never read secret values.' }
+    # --- finance-crypto (36) ---
     @{ cat='finance-crypto'; name='TurboTax return files'; path='%USERPROFILE%\Documents\TurboTax'; kind='folder'; admin=$false; enum=$false; note='Count .tax20## return files (each holds SSNs and full return); existence/count only, never open.' }
     @{ cat='finance-crypto'; name='H&R Block return files'; path='%USERPROFILE%\Documents\HRBlock'; kind='folder'; admin=$false; enum=$false; note='Count .T## tax return files; existence/count only.' }
     @{ cat='finance-crypto'; name='Quicken data file'; path='%USERPROFILE%\Documents\Quicken'; kind='folder'; admin=$false; enum=$false; note='Detect .QDF/.QDF-backup files; existence only.' }
@@ -543,6 +585,12 @@ $Probes = @(
     @{ cat='finance-crypto'; name='Intuit ProSeries (preparer client files)'; path='%SYSTEMDRIVE%\ProWin<YY>'; kind='folder'; admin=$false; enum=$false; note='ProSeries installs per tax year to C:\ProWin<YY> (standalone) / C:\ProNet<YY> (network), client data in <YY>Data. Intuit registry (HKCU\Software\Intuit) already cataloged. Machine-wide; removal needs admin.' }
     @{ cat='finance-crypto'; name='Intuit Lacerte (preparer client files)'; path='%SYSTEMDRIVE%\Lacerte'; kind='folder'; admin=$false; enum=$false; note='Lacerte installs under C:\Lacerte\<YY>tax with client data in CLData/IData folders. Intuit registry already cataloged. Machine-wide; removal needs admin.' }
     @{ cat='finance-crypto'; name='TaxSlayer Pro (desktop)'; path='%SYSTEMDRIVE%\TaxSlayerPro'; kind='folder'; admin=$false; enum=$false; note='TaxSlayer Pro (preparer desktop) stores client returns under C:\TaxSlayerPro; machine-wide, removal needs admin. Consumer TaxSlayer is web-only (browser traces only).' }
+    @{ cat='finance-crypto'; name='HomeBank preferences'; path='%APPDATA%\homebank'; kind='folder'; admin=$false; enum=$false; note='Existence of HomeBank config + recent-files list; counts only.' }
+    @{ cat='finance-crypto'; name='Dogecoin Core wallet'; path='%APPDATA%\Dogecoin'; kind='folder'; admin=$false; enum=$false; note='Existence of data dir and presence/count of wallet.dat and wallets\; never open the wallet.' }
+    @{ cat='finance-crypto'; name='Litecoin Core wallet'; path='%APPDATA%\Litecoin'; kind='folder'; admin=$false; enum=$false; note='Existence of data dir and presence/count of wallet.dat and wallets\; never open the wallet.' }
+    @{ cat='finance-crypto'; name='Zecwallet Lite wallet'; path='%APPDATA%\Zecwallet Lite'; kind='folder'; admin=$false; enum=$false; note='Existence of Zecwallet Lite app folder (also check ''zecwallet-lite''); counts only, never open the wallet file.' }
+    @{ cat='finance-crypto'; name='Feather (Monero) wallet'; path='%APPDATA%\feather'; kind='folder'; admin=$false; enum=$false; note='Existence of config (settings.json) and wallets\ subfolder; counts only, never read .keys.' }
+    @{ cat='finance-crypto'; name='Frame wallet'; path='%APPDATA%\frame'; kind='folder'; admin=$false; enum=$false; note='Existence of Frame Electron user-data folder; counts only, never read key material.' }
     # --- vm-backup (21) ---
     @{ cat='vm-backup'; name='VirtualBox VMs'; path='%USERPROFILE%\VirtualBox VMs'; kind='folder'; admin=$false; enum=$false; note='Default VirtualBox machine folder; .vbox config plus .vdi/.vmdk/.vhd guest disks, each a full OS.' }
     @{ cat='vm-backup'; name='VirtualBox config & media registry'; path='%USERPROFILE%\.VirtualBox'; kind='folder'; admin=$false; enum=$false; note='VirtualBox.xml lists every registered VM and a recent-media MRU, even for deleted disks.' }
@@ -565,7 +613,7 @@ $Probes = @(
     @{ cat='vm-backup'; name='Duplicati config & job databases'; path='%LOCALAPPDATA%\Duplicati'; kind='folder'; admin=$false; enum=$false; note='Duplicati-server.sqlite reveals backup sources and remote destinations (existence only).' }
     @{ cat='vm-backup'; name='Kopia repository config'; path='%APPDATA%\kopia'; kind='folder'; admin=$false; enum=$false; note='repository.config points at the (encrypted) backup repo location; report existence only.' }
     @{ cat='vm-backup'; name='restic cache'; path='%LOCALAPPDATA%\restic'; kind='folder'; admin=$false; enum=$false; note='Presence indicates restic backups and hints at repo usage; report existence only, never keys.' }
-    # --- identity-accounts (17) ---
+    # --- identity-accounts (20) ---
     @{ cat='identity-accounts'; name='Chromium Local State (account/profile list)'; path='%LOCALAPPDATA%\Google\Chrome\User Data\Local State'; kind='folder'; admin=$false; enum=$false; note='Names profiles and last account; a synced account means a cloud copy survives. Repeat per browser.' }
     @{ cat='identity-accounts'; name='Office signed-in identity'; path='HKCU:\Software\Microsoft\Office\16.0\Common\Identity'; kind='registry'; admin=$false; enum=$false; note='Subkey count indicates accounts (emails/display names) signed into Office.' }
     @{ cat='identity-accounts'; name='Microsoft 365 token cache (OneAuth)'; path='%LOCALAPPDATA%\Microsoft\OneAuth'; kind='folder'; admin=$false; enum=$false; note='Cached MS account sign-in tokens; existence/size only. Role overlaps IdentityCache/TokenBroker.' }
@@ -583,6 +631,9 @@ $Probes = @(
     @{ cat='identity-accounts'; name='Office 2013 signed-in identity'; path='HKCU:\Software\Microsoft\Office\15.0\Common\Identity'; kind='registry'; admin=$false; enum=$false; note='Email/display name of Microsoft or M365 account in Office 2013; 14.0 has no sign-in. Existence only.' }
     @{ cat='identity-accounts'; name='Work Folders'; path='%USERPROFILE%\Work Folders'; kind='folder'; admin=$false; enum=$false; note='Enterprise synced files + work account and server URL (config under HKCU/HKLM WorkFolders). Existence only.' }
     @{ cat='identity-accounts'; name='Cloud Experience Host account cache'; path='%LOCALAPPDATA%\Packages\Microsoft.Windows.CloudExperienceHost_cw5n1h2txyewy'; kind='folder'; admin=$false; enum=$false; note='Transient sign-in webview cache (email/tenant, cookies); durable tokens are in AAD broker/WAM. Existence only.' }
+    @{ cat='identity-accounts'; name='Microsoft Store app cache'; path='%LOCALAPPDATA%\Packages\Microsoft.WindowsStore_8wekyb3d8bbwe\LocalCache'; kind='folder'; admin=$false; enum=$false; note='Signed-in MS account + download-history traces; existence only.' }
+    @{ cat='identity-accounts'; name='Store license store (ClipSVC)'; path='%ProgramData%\Microsoft\Windows\ClipSVC'; kind='folder'; admin=$true; enum=$false; note='App/game licenses tied to the account; admin; existence only.' }
+    @{ cat='identity-accounts'; name='MDM / work-school enrollment'; path='HKLM:\SOFTWARE\Microsoft\Enrollments'; kind='registry'; admin=$true; enum=$false; note='Device-management enrollment (org/UPN); admin to read; report presence, not account values.' }
     # --- credentials (26) ---
     @{ cat='credentials'; name='Chromium saved-password store'; path='%LOCALAPPDATA%\Google\Chrome\User Data\Default\Login Data'; kind='folder'; admin=$false; enum=$false; note='Count only: site+username list (passwords encrypted). Also Login Data For Account.' }
     @{ cat='credentials'; name='Chromium extension stored data'; path='%LOCALAPPDATA%\Google\Chrome\User Data\Default\Local Extension Settings'; kind='folder'; admin=$false; enum=$false; note='Count only: may hold wallet/password-manager vaults (encrypted); existence indicator.' }
@@ -610,7 +661,7 @@ $Probes = @(
     @{ cat='credentials'; name='Password Safe (pwsafe)'; path='HKCU:\Software\Password Safe\Password Safe'; kind='registry'; admin=$false; enum=$false; note='pwsafe settings + recent-safe (MRU) list; the .psafe3 vault itself is user-placed (often in Documents).' }
     @{ cat='credentials'; name='Padloc'; path='%APPDATA%\Padloc'; kind='folder'; admin=$false; enum=$false; note='Padloc desktop (Electron) encrypted local store + account email; vault may sync to Padloc cloud or a self-hosted server.' }
     @{ cat='credentials'; name='Buttercup'; path='%APPDATA%\Buttercup'; kind='folder'; admin=$false; enum=$false; note='Buttercup desktop (Electron) config listing each .bcup vault''s name/location (local or cloud-linked).' }
-    # --- dev-secrets (87) ---
+    # --- dev-secrets (121) ---
     @{ cat='dev-secrets'; name='VS Code global state'; path='%APPDATA%\Code\User\globalStorage'; kind='folder'; admin=$false; enum=$false; note='storage.json + state.vscdb: recent folders and extension state that can hold tokens; existence only.' }
     @{ cat='dev-secrets'; name='Git stored credentials (plaintext)'; path='%USERPROFILE%\.git-credentials'; kind='folder'; admin=$false; enum=$false; note='Only if ''store'' helper used; plaintext https://user:token@host. Existence only, never opened.' }
     @{ cat='dev-secrets'; name='Git identity config'; path='%USERPROFILE%\.gitconfig'; kind='folder'; admin=$false; enum=$false; note='user.name/email + credential-helper config; existence only.' }
@@ -698,7 +749,41 @@ $Probes = @(
     @{ cat='dev-secrets'; name='Gradle properties'; path='%USERPROFILE%\.gradle'; kind='folder'; admin=$false; enum=$false; note='gradle.properties may hold repo/signing creds in clear (if present)' }
     @{ cat='dev-secrets'; name='conda config'; path='%USERPROFILE%\.condarc'; kind='folder'; admin=$false; enum=$false; note='file: channels (private URLs), embedded tokens, proxy creds' }
     @{ cat='dev-secrets'; name='Anaconda.org token store'; path='%USERPROFILE%\.continuum\anaconda-client\tokens'; kind='folder'; admin=$false; enum=$false; note='saved Anaconda.org API tokens' }
-    # --- network (36) ---
+    @{ cat='dev-secrets'; name='Bruno app data'; path='%APPDATA%\bruno'; kind='folder'; admin=$false; enum=$false; note='App prefs and secret env-var values; collections (.bru) live in user-chosen folders' }
+    @{ cat='dev-secrets'; name='SoapUI settings'; path='%USERPROFILE%\soapui-settings.xml'; kind='folder'; admin=$false; enum=$false; note='Single global settings file; may hold saved endpoint credentials. Existence only' }
+    @{ cat='dev-secrets'; name='Thunder Client (VS Code)'; path='%APPDATA%\Code\User\globalStorage\rangav.vscode-thunder-client'; kind='folder'; admin=$false; enum=$false; note='API collections and env vars with tokens; Insiders/VSCodium keep separate copies' }
+    @{ cat='dev-secrets'; name='Pulumi config'; path='%USERPROFILE%\.pulumi'; kind='folder'; admin=$false; enum=$false; note='credentials.json holds a Pulumi Cloud token; check existence only' }
+    @{ cat='dev-secrets'; name='Ansible user dir'; path='%USERPROFILE%\.ansible'; kind='folder'; admin=$false; enum=$false; note='galaxy_token + caches; on Windows the real dir is usually inside WSL. Also %USERPROFILE%\.ansible.cfg' }
+    @{ cat='dev-secrets'; name='Helm config'; path='%APPDATA%\helm'; kind='folder'; admin=$false; enum=$false; note='repositories.yaml and registry/config.json hold repo/OCI login tokens' }
+    @{ cat='dev-secrets'; name='Vagrant home'; path='%USERPROFILE%\.vagrant.d'; kind='folder'; admin=$false; enum=$false; note='Boxes plus data/vagrant_login_token if logged in to Vagrant Cloud' }
+    @{ cat='dev-secrets'; name='Lens / OpenLens data'; path='%APPDATA%\Lens'; kind='folder'; admin=$false; enum=$false; note='Stores kubeconfig copies with cluster tokens/certs; also %APPDATA%\OpenLens' }
+    @{ cat='dev-secrets'; name='k9s config (legacy)'; path='%USERPROFILE%\.k9s'; kind='folder'; admin=$false; enum=$false; note='Clusters/contexts used and screen dumps; reads but does not store kube creds' }
+    @{ cat='dev-secrets'; name='k9s config (XDG)'; path='%LOCALAPPDATA%\k9s'; kind='folder'; admin=$false; enum=$false; note='Newer k9s config location on Windows' }
+    @{ cat='dev-secrets'; name='Rancher Desktop config'; path='%APPDATA%\rancher-desktop'; kind='folder'; admin=$false; enum=$false; note='Settings/config; engine data is in WSL distros rancher-desktop / rancher-desktop-data. Also %LOCALAPPDATA%\rancher-desktop' }
+    @{ cat='dev-secrets'; name='Podman Desktop config'; path='%APPDATA%\Podman Desktop'; kind='folder'; admin=$false; enum=$false; note='GUI config/state; container engine runs in a WSL podman machine' }
+    @{ cat='dev-secrets'; name='Podman registry auth'; path='%APPDATA%\containers'; kind='folder'; admin=$false; enum=$false; note='auth.json holds base64 registry login tokens from podman login' }
+    @{ cat='dev-secrets'; name='minikube data'; path='%USERPROFILE%\.minikube'; kind='folder'; admin=$false; enum=$false; note='ca.crt/client.crt/client.key for the local cluster; local-only access' }
+    @{ cat='dev-secrets'; name='DB Browser for SQLite'; path='HKCU:\Software\sqlitebrowser'; kind='registry'; admin=$false; enum=$false; note='Qt MRU: file paths of recently opened SQLite DBs; no server creds' }
+    @{ cat='dev-secrets'; name='Studio 3T connections'; path='%USERPROFILE%\.3T'; kind='folder'; admin=$false; enum=$false; note='MongoDB connection manager: hosts, usernames, locally stored passwords' }
+    @{ cat='dev-secrets'; name='RazorSQL profiles'; path='%USERPROFILE%\.razorsql'; kind='folder'; admin=$false; enum=$false; note='DB connection profiles with locally obfuscated passwords' }
+    @{ cat='dev-secrets'; name='Aqua Data Studio'; path='%USERPROFILE%\.datastudio'; kind='folder'; admin=$false; enum=$false; note='Server registrations, saved passwords, and SQL query history' }
+    @{ cat='dev-secrets'; name='Oracle SQL Developer'; path='%APPDATA%\SQL Developer'; kind='folder'; admin=$false; enum=$false; note='connections.json/xml: hosts, service names, usernames + locally-keyed encrypted passwords' }
+    @{ cat='dev-secrets'; name='Perforce tickets'; path='%USERPROFILE%\.p4tickets'; kind='folder'; admin=$false; enum=$false; note='Active p4 login tickets (session tokens); also .p4trust. Existence/count only' }
+    @{ cat='dev-secrets'; name='Perforce environment (registry)'; path='HKCU:\Software\Perforce\Environment'; kind='registry'; admin=$false; enum=$false; note='p4 set values: P4PORT, P4USER, P4CLIENT' }
+    @{ cat='dev-secrets'; name='Subversion auth cache'; path='%APPDATA%\Subversion\auth'; kind='folder'; admin=$false; enum=$false; note='Cached SVN credentials (DPAPI-encrypted on Windows); repo URLs and usernames' }
+    @{ cat='dev-secrets'; name='TortoiseSVN settings (registry)'; path='HKCU:\Software\TortoiseSVN'; kind='registry'; admin=$false; enum=$false; note='Settings plus recent repo URLs and commit log messages' }
+    @{ cat='dev-secrets'; name='Mercurial config'; path='%USERPROFILE%\.hgrc'; kind='folder'; admin=$false; enum=$false; note='Identity and [auth]/[paths] repo URLs; also %USERPROFILE%\Mercurial.ini' }
+    @{ cat='dev-secrets'; name='Fossil global config'; path='%LOCALAPPDATA%\_fossil'; kind='folder'; admin=$false; enum=$false; note='Global config DB: opened repo paths and sync URLs; fallback %USERPROFILE%\_fossil' }
+    @{ cat='dev-secrets'; name='age / SOPS keys'; path='%APPDATA%\sops\age\keys.txt'; kind='folder'; admin=$false; enum=$false; note='age private keys SOPS uses to decrypt; report existence and count only, never contents' }
+    @{ cat='dev-secrets'; name='pass / gopass store'; path='%USERPROFILE%\.password-store'; kind='folder'; admin=$false; enum=$false; note='GPG-encrypted entries; entry names reveal services. gopass config at %APPDATA%\gopass' }
+    @{ cat='dev-secrets'; name='chezmoi source state'; path='%USERPROFILE%\.local\share\chezmoi'; kind='folder'; admin=$false; enum=$false; note='Managed dotfiles (may embed tokens); config at %USERPROFILE%\.config\chezmoi' }
+    @{ cat='dev-secrets'; name='Salesforce CLI auth'; path='%USERPROFILE%\.sfdx'; kind='folder'; admin=$false; enum=$false; note='Per-org OAuth access/refresh tokens and instance URLs; also %USERPROFILE%\.sf' }
+    @{ cat='dev-secrets'; name='SAP GUI landscape'; path='%APPDATA%\SAP\Common\SAPUILandscape.xml'; kind='folder'; admin=$false; enum=$false; note='SAP system/connection list; input history cached under %APPDATA%\SAP\SAP GUI' }
+    @{ cat='dev-secrets'; name='Citrix Workspace config'; path='%APPDATA%\Citrix'; kind='folder'; admin=$false; enum=$false; note='StoreFront/Gateway URLs, account, cached app list; also %LOCALAPPDATA%\Citrix' }
+    @{ cat='dev-secrets'; name='Citrix Workspace (registry)'; path='HKCU:\Software\Citrix'; kind='registry'; admin=$false; enum=$false; note='Citrix account/store settings' }
+    @{ cat='dev-secrets'; name='Tomcat users config'; path='%CATALINA_BASE%\conf\tomcat-users.xml'; kind='folder'; admin=$false; enum=$false; note='Only if env var set; manager/admin creds in plaintext. JBoss uses %JBOSS_HOME%\standalone\configuration\mgmt-users.properties' }
+    @{ cat='dev-secrets'; name='Twilio CLI config'; path='%USERPROFILE%\.twilio-cli'; kind='folder'; admin=$false; enum=$false; note='config.json lists account SIDs/profiles; the API secret is in Windows Credential Manager' }
+    # --- network (44) ---
     @{ cat='network'; name='Saved Wi-Fi profiles'; path='%ProgramData%\Microsoft\Wlansvc\Profiles\Interfaces'; kind='folder'; admin=$true; enum=$false; note='XML-per-network count = saved SSIDs; keys never read (no key=clear).' }
     @{ cat='network'; name='OpenVPN profiles'; path='%USERPROFILE%\OpenVPN\config'; kind='folder'; admin=$false; enum=$false; note='*.ovpn files (may embed certs/keys) plus auth-user-pass credential files.' }
     @{ cat='network'; name='WireGuard tunnels'; path='%ProgramFiles%\WireGuard\Data\Configurations'; kind='folder'; admin=$true; enum=$false; note='Count of .conf.dpapi tunnels (DPAPI-encrypted under Local System).' }
@@ -735,7 +820,15 @@ $Probes = @(
     @{ cat='network'; name='SonicWall NetExtender'; path='HKCU:\Software\SonicWall\NetExtender'; kind='registry'; admin=$false; enum=$false; note='Saved profiles (server address, username, domain); also %APPDATA%\SonicWall\NetExtender. Key casing (historically ''SonicWALL'') and newer-version layout vary.' }
     @{ cat='network'; name='Ivanti / Pulse Secure'; path='%APPDATA%\Pulse Secure'; kind='folder'; admin=$false; enum=$false; note='User connection store (e.g. ConnectionStore\connstore.dat) with sign-in URLs/realms; also %ProgramData%\Pulse Secure. Ivanti Secure Access rebrand may use an Ivanti folder. Exact path varies.' }
     @{ cat='network'; name='Twingate'; path='%ProgramData%\Twingate'; kind='folder'; admin=$false; enum=$false; note='Service config/logs incl. the Twingate network name (company.twingate.com); also %LOCALAPPDATA%\Twingate. Device/account also live in the org admin console.' }
-    # --- devices (15) ---
+    @{ cat='network'; name='Mozilla VPN data'; path='%APPDATA%\MozillaVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of Mozilla VPN per-user folder (folder may appear as ''Mozilla VPN''); settings/logs presence only.' }
+    @{ cat='network'; name='IVPN user data'; path='%APPDATA%\IVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of IVPN per-user settings/logs; counts only.' }
+    @{ cat='network'; name='IVPN service data'; path='%PROGRAMDATA%\IVPN'; kind='folder'; admin=$true; enum=$false; note='Existence of IVPN daemon state; counts only. Folder may be ACL-restricted and removal needs admin.' }
+    @{ cat='network'; name='AirVPN Eddie config'; path='%APPDATA%\AirVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of Eddie config/logs (default.xml profile); counts only, never read the profile.' }
+    @{ cat='network'; name='Atlas VPN data'; path='%APPDATA%\AtlasVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of Atlas VPN per-user folder (also check %LOCALAPPDATA%); counts only. App is discontinued (folded into NordVPN), so usually a leftover.' }
+    @{ cat='network'; name='VyprVPN data'; path='%APPDATA%\VyprVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of VyprVPN per-user folder; confirm exact location (also %LOCALAPPDATA% or a Golden Frog vendor subfolder); counts only.' }
+    @{ cat='network'; name='PureVPN data'; path='%APPDATA%\PureVPN'; kind='folder'; admin=$false; enum=$false; note='Existence of PureVPN per-user folder; confirm exact location (also %LOCALAPPDATA%); counts only.' }
+    @{ cat='network'; name='Hotspot Shield data'; path='%LOCALAPPDATA%\Hotspot Shield'; kind='folder'; admin=$false; enum=$false; note='Existence of Hotspot Shield per-user folder; also check %APPDATA% and an AnchorFree/Pango folder; counts only.' }
+    # --- devices (17) ---
     @{ cat='devices'; name='USB storage history'; path='HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR'; kind='registry'; admin=$false; enum=$false; note='Subkey count = USB storage devices ever attached (vendor/model/serial).' }
     @{ cat='devices'; name='USB device enumeration'; path='HKLM:\SYSTEM\CurrentControlSet\Enum\USB'; kind='registry'; admin=$false; enum=$false; note='All USB devices ever attached; some properties ACL-restricted.' }
     @{ cat='devices'; name='Mounted volumes map'; path='HKLM:\SYSTEM\MountedDevices'; kind='registry'; admin=$true; enum=$false; note='Drive-letter/volume to disk mappings for attached media.' }
@@ -751,7 +844,9 @@ $Probes = @(
     @{ cat='devices'; name='Game controllers / joysticks (DirectInput)'; path='HKCU:\System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM'; kind='registry'; admin=$false; enum=$false; note='Friendly names of gamepads, wheels and flight sticks connected. Existence only.' }
     @{ cat='devices'; name='Imaging devices - scanners/cameras (WIA class)'; path='HKLM:\SYSTEM\CurrentControlSet\Control\Class\{6bdd1fc6-810f-11d0-bec7-08002be2092f}'; kind='registry'; admin=$true; enum=$false; note='FriendlyName per installed scanner/webcam/camera; remove via Device Manager. Existence only.' }
     @{ cat='devices'; name='Portable device (MTP) enumeration (WpdBusEnumRoot)'; path='HKLM:\SYSTEM\CurrentControlSet\Enum\WpdBusEnumRoot'; kind='registry'; admin=$true; enum=$false; note='Phones/cameras/media players connected over MTP/PTP; bus-level, deeper than Windows Portable Devices list. Existence only.' }
-    # --- activity-traces (21) ---
+    @{ cat='devices'; name='Audio endpoints (MMDevices)'; path='HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio'; kind='registry'; admin=$true; enum=$false; note='Render/Capture endpoint friendly names (may embed a personal name); list names for owner review only.' }
+    @{ cat='devices'; name='ReadyBoost device cache (EMDMgmt)'; path='HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\EMDMgmt'; kind='registry'; admin=$true; enum=$false; note='Removable-volume labels + serials evaluated for ReadyBoost; admin; list labels for owner review.' }
+    # --- activity-traces (23) ---
     @{ cat='activity-traces'; name='Recent items'; path='%APPDATA%\Microsoft\Windows\Recent'; kind='folder'; admin=$false; enum=$false; note='Count of .lnk shortcuts = recently opened files/folders, incl. removed drives.' }
     @{ cat='activity-traces'; name='Jump lists (automatic)'; path='%APPDATA%\Microsoft\Windows\Recent\AutomaticDestinations'; kind='folder'; admin=$false; enum=$false; note='One file per app; count = apps that kept recent-item history. Backs Quick Access.' }
     @{ cat='activity-traces'; name='Jump lists (custom)'; path='%APPDATA%\Microsoft\Windows\Recent\CustomDestinations'; kind='folder'; admin=$false; enum=$false; note='App-pinned/task jump-list entries; count of per-app files.' }
@@ -773,7 +868,9 @@ $Probes = @(
     @{ cat='activity-traces'; name='Windows Search index (Windows.edb)'; path='%ProgramData%\Microsoft\Search\Data\Applications\Windows'; kind='folder'; admin=$true; enum=$false; note='Content index of file names/text; protected, reports empty when unelevated.' }
     @{ cat='activity-traces'; name='Maps app data'; path='%LOCALAPPDATA%\Packages\Microsoft.WindowsMaps_8wekyb3d8bbwe'; kind='folder'; admin=$false; enum=$false; note='Search history, favorites (home/work), offline-map regions.' }
     @{ cat='activity-traces'; name='Ditto clipboard history'; path='%APPDATA%\Ditto'; kind='folder'; admin=$false; enum=$false; note='Ditto.db clipboard-history database; flag existence/count only, never read values.' }
-    # --- forensic-traces (16) ---
+    @{ cat='activity-traces'; name='Device search history toggle'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings'; kind='registry'; admin=$false; enum=$false; note='IsDeviceSearchHistoryEnabled flag; items cleared via Settings; report on/off only.' }
+    @{ cat='activity-traces'; name='Connected Devices Platform (CDP)'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\CDP'; kind='registry'; admin=$false; enum=$false; note='Nearby Sharing / cross-device discovery state; existence only.' }
+    # --- forensic-traces (17) ---
     @{ cat='forensic-traces'; name='UserAssist'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist'; kind='registry'; admin=$false; enum=$false; note='Subkey count = GUI programs launched (ROT13 names, run counts, last-run times).' }
     @{ cat='forensic-traces'; name='ShellBags (NTUSER)'; path='HKCU:\Software\Microsoft\Windows\Shell\BagMRU'; kind='registry'; admin=$false; enum=$false; note='Subkey count = depth of browsed-folder history (incl. removed/network/deleted).' }
     @{ cat='forensic-traces'; name='ShellBags (USRCLASS)'; path='HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU'; kind='registry'; admin=$false; enum=$false; note='Primary per-user shellbags in USRCLASS hive; subkey count.' }
@@ -790,10 +887,11 @@ $Probes = @(
     @{ cat='forensic-traces'; name='RecentApps (Windows 10 launch history)'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps'; kind='registry'; admin=$false; enum=$false; note='Win10-centric, usually absent on Win11; apps launched + recent files + last-access time. Count/existence only.' }
     @{ cat='forensic-traces'; name='Program Compatibility Assistant (PCA) logs'; path='%WINDIR%\appcompat\pca'; kind='folder'; admin=$true; enum=$false; note='Win11 22H2+; PcaAppLaunchDic.txt/PcaGeneralDb*.txt record executable paths + run times. Existence only.' }
     @{ cat='forensic-traces'; name='Compatibility Assistant Store (AppCompatFlags)'; path='HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Store'; kind='registry'; admin=$false; enum=$false; note='Also HKLM copy (admin); records paths of executables that ran. Count/existence only.' }
+    @{ cat='forensic-traces'; name='NTFS USN change journal'; path='%SystemDrive%\$Extend\$UsnJrnl'; kind='folder'; admin=$true; enum=$false; note='Volume change log (file create/rename/delete names); NTFS metafile detected via fsutil usn queryjournal (admin), not a file open; presence only.' }
     # --- recall-copilot (2) ---
     @{ cat='recall-copilot'; name='Recall snapshots'; path='%LOCALAPPDATA%\CoreAIPlatform.00'; kind='folder'; admin=$false; enum=$false; note='Recall screenshot DB/images on Copilot+ PCs; also governs Click to Do.' }
     @{ cat='recall-copilot'; name='Copilot app data'; path='%LOCALAPPDATA%\Packages\Microsoft.Copilot_8wekyb3d8bbwe'; kind='folder'; admin=$false; enum=$false; note='Local Copilot app cache; authoritative history is in the MSA cloud.' }
-    # --- system-traces (25) ---
+    # --- system-traces (33) ---
     @{ cat='system-traces'; name='User temp'; path='%TEMP%'; kind='folder'; admin=$false; enum=$false; note='Per-user scratch files; apps leave documents, installers and logs here.' }
     @{ cat='system-traces'; name='Windows temp'; path='%SystemRoot%\Temp'; kind='folder'; admin=$true; enum=$false; note='Machine-level service/installer scratch files.' }
     @{ cat='system-traces'; name='Windows Error Reporting (user)'; path='%LOCALAPPDATA%\Microsoft\Windows\WER'; kind='folder'; admin=$false; enum=$false; note='Crash reports naming apps, file paths and data fragments.' }
@@ -819,6 +917,14 @@ $Probes = @(
     @{ cat='system-traces'; name='Component-Based Servicing (CBS) logs'; path='%WINDIR%\Logs\CBS'; kind='folder'; admin=$true; enum=$false; note='Package/update servicing history; low personal content. Existence only.' }
     @{ cat='system-traces'; name='Live kernel reports (LiveKernelReports)'; path='%WINDIR%\LiveKernelReports'; kind='folder'; admin=$true; enum=$false; note='*.dmp live kernel dumps; memory fragments + fault dates. Existence only.' }
     @{ cat='system-traces'; name='PowerShell transcripts'; path='%USERPROFILE%\Documents\PowerShell\transcripts'; kind='folder'; admin=$false; enum=$false; note='Only if transcription was enabled; full command+output logs; separate from PSReadLine history. Existence only.' }
+    @{ cat='system-traces'; name='Windows Spotlight assets'; path='%LOCALAPPDATA%\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets'; kind='folder'; admin=$false; enum=$false; note='Spotlight/lock-screen images + liked content; existence and file count only.' }
+    @{ cat='system-traces'; name='Content Delivery Manager settings'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'; kind='registry'; admin=$false; enum=$false; note='Suggested-content/Spotlight preferences; key presence only.' }
+    @{ cat='system-traces'; name='Taskbar pinned shortcuts'; path='%APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar'; kind='folder'; admin=$false; enum=$false; note='One .lnk per pinned app; count and names reveal software used.' }
+    @{ cat='system-traces'; name='Start menu pins (Win11)'; path='%LOCALAPPDATA%\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState'; kind='folder'; admin=$false; enum=$false; note='Start pin layout (start*.bin); existence only.' }
+    @{ cat='system-traces'; name='Inking & typing personalization store'; path='%LOCALAPPDATA%\Microsoft\InputPersonalization'; kind='folder'; admin=$false; enum=$false; note='Learned typing data; existence only, do not read contents.' }
+    @{ cat='system-traces'; name='Custom spelling dictionary'; path='%APPDATA%\Microsoft\Spelling'; kind='folder'; admin=$false; enum=$false; note='Learned words (default.dic); existence/size only, never read the words.' }
+    @{ cat='system-traces'; name='Speech personalization data'; path='%LOCALAPPDATA%\Microsoft\Speech_OneCore'; kind='folder'; admin=$false; enum=$false; note='Local speech/acoustic adaptation; existence only.' }
+    @{ cat='system-traces'; name='Advertising ID'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo'; kind='registry'; admin=$false; enum=$false; note='Per-user ad identifier + enabled flag; report enabled/disabled only, not the ID value.' }
 )
 
 # --- run -------------------------------------------------------------------
@@ -838,7 +944,7 @@ if ($ListProbes) {
 $isAdmin = Test-WwAdmin
 $report = [ordered]@{
     tool        = 'WipeWise'
-    version     = '0.1.3'
+    version     = '0.1.4'
     mode        = $(if ($Quick) { 'quick' } else { 'full' })
     generatedOn = (Get-Date).ToString('o')
     computer    = $env:COMPUTERNAME

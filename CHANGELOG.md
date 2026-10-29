@@ -4,6 +4,20 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] - 2026-10-30
+
+More longer-tail application coverage. Still **read-only and guidance-only.**
+
+### Added
+- ~110 more read-only probes (now ~751) and ~200 more catalog entries (now
+  700+ artifacts), covering regional messengers/email/browsers (QQ, TIM, Wickr,
+  Zulip, Nheko, BlueMail, UC/Sogou/Sleipnir/Lunascape, …), creative/CAD/
+  scientific tools (AutoCAD, SolidWorks, Maya, Revit, SketchUp, MATLAB, …),
+  enterprise developer tooling (Pulumi, Helm, Lens, Perforce, SAP GUI,
+  Salesforce CLI, …), more finance/tax/crypto and VPN clients, and deeper
+  Windows OS traces (Spotlight/lock-screen media, search and personalization
+  caches).
+
 ## [0.1.3] - 2026-10-30
 
 More application and artifact coverage. Still **read-only and guidance-only.**
@@ -80,6 +94,7 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.1.4]: https://github.com/keraattin/wipewise/releases/tag/v0.1.4
 [0.1.3]: https://github.com/keraattin/wipewise/releases/tag/v0.1.3
 [0.1.2]: https://github.com/keraattin/wipewise/releases/tag/v0.1.2
 [0.1.1]: https://github.com/keraattin/wipewise/releases/tag/v0.1.1
