@@ -148,7 +148,7 @@ $Plan = @(
     @{ id='network'; title='Network & VPN configuration'; desc='Saved Wi-Fi profiles (names/count only), VPN clients (OpenVPN/WireGuard/Cisco/RAS phonebook), mapped drives, RDP targets, SMB shares, hosts file and proxy. Reveal employers, home/work networks and remote hosts; keys never displayed.' }
     @{ id='devices'; title='Attached-device history'; desc='Durable records of USB storage, mounted volumes, portable devices, Bluetooth pairings, printers (and spool queue), and camera/mic/location app-access history. Not cloud-synced; cleanly cleared only by a full reset.' }
     @{ id='activity-traces'; title='Activity & recent-use history'; desc='Recent items, jump lists, Explorer/Run/dialog MRUs, Timeline, clipboard history, notification previews, shell/PowerShell history and the search index. Rebuild on use, so clean last; synced items keep a Microsoft-account copy.' }
-    @{ id='forensic-traces'; title='Forensic execution artifacts'; desc='Deeper, mostly admin-protected execution and browsing evidence: UserAssist, ShellBags, MUICache, Prefetch, Amcache, SRUM, BAM, ShimCache, thumbnail/RDP caches and event logs. WipeWise recommends a full Reset-this-PC rather than piecemeal hive edits.' }
+    @{ id='forensic-traces'; title='Forensic execution artifacts'; desc='Deeper execution and browsing evidence. The per-user HKCU history keys here (UserAssist, ShellBags, MUICache, FeatureUsage) can be cleared by the opt-in reset; the system-level ones (Prefetch, Amcache, SRUM, BAM, ShimCache, thumbnail/RDP caches, event logs) are admin-protected and need a full Reset-this-PC, not piecemeal hive edits.' }
     @{ id='recall-copilot'; title='Windows AI (Recall & Copilot)'; desc='Copilot+ Recall snapshot store (CoreAIPlatform) and local Copilot app cache, plus the Click-to-Do feature over the same stack. Recall is local-only but highly sensitive; Copilot conversation history lives in the Microsoft-account cloud.' }
     @{ id='system-traces'; title='System leftovers & caches'; desc='Temp folders, crash/error reports and dumps, Windows.old, restore points/shadow copies, hiberfil/pagefile, telemetry DB, update/installer caches. Can hold fragments of any in-memory or edited data; several need admin.' }
     @{ id='other-users'; title='Other user accounts'; desc='Personal data in other local accounts under C:\Users. The per-user probes only cover the signed-in account; reading others needs admin.' }
@@ -865,6 +865,7 @@ $Probes = @(
     @{ cat='activity-traces'; name='Cortana data (legacy)'; path='%LOCALAPPDATA%\Packages\Microsoft.Windows.Cortana_cw5n1h2txyewy'; kind='folder'; admin=$false; enum=$false; note='Legacy; normally absent on current Windows 11, present on older Win10/upgrades.' }
     @{ cat='activity-traces'; name='PowerShell history (PSReadLine)'; path='%APPDATA%\Microsoft\Windows\PowerShell\PSReadLine'; kind='folder'; admin=$false; enum=$false; note='ConsoleHost_history.txt (plain-text commands); existence+size only, no content.' }
     @{ cat='activity-traces'; name='RDP connection MRU'; path='HKCU:\Software\Microsoft\Terminal Server Client\Default'; kind='registry'; admin=$false; enum=$false; note='Value count = recent RDP targets; absent until mstsc used.' }
+    @{ cat='activity-traces'; name='Map Network Drive MRU'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Map Network Drive MRU'; kind='registry'; admin=$false; enum=$false; note='Value count = UNC share paths mapped to drive letters; absent until a drive is mapped.' }
     @{ cat='activity-traces'; name='Windows Search index (Windows.edb)'; path='%ProgramData%\Microsoft\Search\Data\Applications\Windows'; kind='folder'; admin=$true; enum=$false; note='Content index of file names/text; protected, reports empty when unelevated.' }
     @{ cat='activity-traces'; name='Maps app data'; path='%LOCALAPPDATA%\Packages\Microsoft.WindowsMaps_8wekyb3d8bbwe'; kind='folder'; admin=$false; enum=$false; note='Search history, favorites (home/work), offline-map regions.' }
     @{ cat='activity-traces'; name='Ditto clipboard history'; path='%APPDATA%\Ditto'; kind='folder'; admin=$false; enum=$false; note='Ditto.db clipboard-history database; flag existence/count only, never read values.' }
@@ -874,6 +875,8 @@ $Probes = @(
     @{ cat='forensic-traces'; name='UserAssist'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist'; kind='registry'; admin=$false; enum=$false; note='Subkey count = GUI programs launched (ROT13 names, run counts, last-run times).' }
     @{ cat='forensic-traces'; name='ShellBags (NTUSER)'; path='HKCU:\Software\Microsoft\Windows\Shell\BagMRU'; kind='registry'; admin=$false; enum=$false; note='Subkey count = depth of browsed-folder history (incl. removed/network/deleted).' }
     @{ cat='forensic-traces'; name='ShellBags (USRCLASS)'; path='HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU'; kind='registry'; admin=$false; enum=$false; note='Primary per-user shellbags in USRCLASS hive; subkey count.' }
+    @{ cat='forensic-traces'; name='ShellBags view settings (NTUSER)'; path='HKCU:\Software\Microsoft\Windows\Shell\Bags'; kind='registry'; admin=$false; enum=$false; note='Per-bag folder view settings paired with BagMRU; subkey count.' }
+    @{ cat='forensic-traces'; name='ShellBags view settings (USRCLASS)'; path='HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags'; kind='registry'; admin=$false; enum=$false; note='Per-bag folder view settings paired with the USRCLASS BagMRU; subkey count.' }
     @{ cat='forensic-traces'; name='MUICache'; path='HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache'; kind='registry'; admin=$false; enum=$false; note='Value count = executables run (paths + friendly names cached).' }
     @{ cat='forensic-traces'; name='FeatureUsage'; path='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\FeatureUsage'; kind='registry'; admin=$false; enum=$false; note='Subkey count = taskbar app launch/switch tracking (Win10 1903+).' }
     @{ cat='forensic-traces'; name='Prefetch'; path='%WINDIR%\Prefetch'; kind='folder'; admin=$true; enum=$false; note='Count of .pf files = programs executed (run counts, timestamps); needs admin.' }
@@ -944,7 +947,7 @@ if ($ListProbes) {
 $isAdmin = Test-WwAdmin
 $report = [ordered]@{
     tool        = 'WipeWise'
-    version     = '0.2.0'
+    version     = '0.3.0'
     mode        = $(if ($Quick) { 'quick' } else { 'full' })
     generatedOn = (Get-Date).ToString('o')
     computer    = $env:COMPUTERNAME

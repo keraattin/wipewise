@@ -21,7 +21,7 @@ compatibility: >-
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   stage: audit-guidance-and-reset
 ---
 
@@ -35,15 +35,15 @@ to erase**.
 
 ## What this version does and does not do
 
-**Does (v0.1):**
+**Scan (read-only — every version):**
 - Scans the machine **read-only** — reading only file/folder existence and sizes and registry key counts, and **running no external commands** — and reports what personal data and traces exist across 20 categories — including other local user accounts and other drives/volumes, not just the signed-in account on `C:` (see `references/trace-catalog.md`, which maps 700+ distinct artifacts), with sizes and counts.
 - Lists installed programs so the user can decide which to remove.
 - Walks the account / cloud sign-out and de-link checklist.
 - Gives precise, user-run cleanup steps for each category.
 - Explains honestly what cleaning can and cannot guarantee, and offers a read-only re-scan to verify.
 
-**Reset (v0.2, opt-in, EXPERIMENTAL):**
-- `scripts/Invoke-WipeWiseReset.ps1` can remove the files/folders the scan found and clear well-known Windows history keys, for the categories the user approves. It is **dry-run by default** (shows a plan, changes nothing), sends to the **Recycle Bin by default** (`-Mode Delete` = permanent), only touches targets **under the user's own profile**, refuses system folders / other users / other drives / junctions / cloud (unless opted in), clears registry only for a **fixed allowlist of history keys**, and requires `-Execute -Confirm <PC name>` to act. The **user** runs it; see Step 5b.
+**Reset (v0.3, opt-in, EXPERIMENTAL):**
+- `scripts/Invoke-WipeWiseReset.ps1` can remove the files/folders the scan found and clear a fixed allowlist of known **HKCU user-history keys** — the Explorer Recent/Run/Typed/Search MRUs, ComDlg32, Map Network Drive MRU and IE TypedURLs, plus the per-user forensic execution/browsing keys UserAssist, FeatureUsage, MUICache, ShellBags, and the Remote-Desktop connection MRUs — for the categories the user approves. It is **dry-run by default** (shows a plan, changes nothing), sends to the **Recycle Bin by default** (`-Mode Delete` = permanent), only touches file targets **under the user's own profile**, refuses system folders / other users / other drives / junctions / cloud (unless opted in), clears registry **only for that exact-path HKCU allowlist** (wipes each key's values and subkeys, keeps the key, then verifies it emptied), and requires `-Execute -Confirm <PC name>` to act. The **user** runs it; see Step 5b.
 
 **Does not:**
 - Does **not** reinstall or reset Windows, and does **not** erase whole disks at the firmware level. Full-disk sanitization that meets NIST SP 800-88 "Purge" is a separate future mode; see `references/standards.md`.
@@ -97,13 +97,13 @@ to erase**.
 - For each approved category, give exact, user-run steps: the Windows Settings path, the app's own "clear data / sign out", or a specific command **for the user to run themselves**. Pull the method from `references/trace-catalog.md`.
 - You do not execute these. Present them clearly, one category at a time, and let the user tell you when each is done.
 
-### Step 5b — Optional guided reset (v0.2, experimental)
+### Step 5b — Optional guided reset (v0.3, experimental)
 Only if the user wants the tool to perform removals (otherwise stay with Step 5 guidance):
 - Ensure a current scan JSON exists. Run the reset in **DRY-RUN first** (no `-Execute`) for the approved categories and review the plan together — what it would remove, what it refuses, what it would clear:
   ```
   powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers
   ```
-- Explain: Recycle Bin by default (reversible); `-Mode Delete` is permanent. It only touches items under the user's profile and refuses system / other-user / other-drive / junction / cloud targets; registry clearing is limited to known history keys.
+- Explain: Recycle Bin by default (reversible); `-Mode Delete` is permanent. It only touches items under the user's profile and refuses system / other-user / other-drive / junction / cloud targets; registry clearing is limited to a fixed exact-path allowlist of known HKCU history/forensic keys.
 - **The user runs the actual reset** (you never run `-Execute`). They add `-Execute -Confirm <this PC's name>` once satisfied with the dry-run, in a PowerShell session so `-Categories a,b` binds correctly:
   ```
   powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers -Execute -Confirm <PCNAME>
@@ -116,13 +116,13 @@ Only if the user wants the tool to perform removals (otherwise stay with Step 5 
 
 ## Files in this skill
 - `scripts/Invoke-WipeWiseScan.ps1` — read-only scanner; outputs JSON.
-- `scripts/Invoke-WipeWiseReset.ps1` — v0.2 reset (dry-run by default; the user runs `-Execute`). Removes approved files/folders and clears known history keys, with the safety guards above.
+- `scripts/Invoke-WipeWiseReset.ps1` — v0.3 reset (dry-run by default; the user runs `-Execute`). Removes approved files/folders and clears an exact-path allowlist of HKCU history/forensic keys, with the safety guards above.
 - `references/trace-catalog.md` — every category: where it lives, what it reveals, how the user removes it, what survives which action.
 - `references/delink-checklist.md` — account, license, and cloud sign-out/de-link steps, with ordering.
 - `references/limitations.md` — honest limits and the "is it really gone?" explanation.
 - `references/standards.md` — NIST SP 800-88 r2 / IEEE 2883 in plain language: when a personal-data reset is enough and when full-disk sanitization is needed.
 
 ## Out of scope for now (future work)
-- Extending the reset to other user accounts, other volumes, and system/admin locations outside the profile, and to the registry beyond the history-key allowlist (guidance only today).
+- Extending the reset to other user accounts, other volumes, and system/admin locations outside the profile, and to app-specific recent-files keys or any non-HKCU registry (those stay guidance; the auto-clear allowlist covers only OS-level HKCU user-history/forensic keys).
 - "Maximum mode": boot-media firmware sanitize (NVMe/ATA Sanitize), clean OS install, and a signed NIST-aligned erasure certificate.
 - macOS and Linux.

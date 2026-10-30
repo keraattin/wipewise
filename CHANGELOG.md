@@ -4,6 +4,32 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-10-30
+
+Wider **Reset** coverage. The scan stays read-only; the reset stays **opt-in, dry-run by
+default, and experimental.**
+
+### Added
+- Reset registry clearing expanded from 10 to 20 keys. The exact-path HKCU allowlist now also
+  covers the per-user forensic history keys — **UserAssist**, **FeatureUsage**, **MUICache**,
+  **ShellBags** (BagMRU + Bags, in both the NTUSER and USRCLASS hives), the **Remote Desktop**
+  connection MRUs (Default + Servers), and **Map Network Drive MRU** — alongside the existing
+  Explorer Recent/Run/Typed/Search MRUs, ComDlg32 and IE TypedURLs. Each is cleared by exact
+  path (values + subkeys removed, the key itself kept), then verified empty.
+- Scanner: three new read-only probes (Map Network Drive MRU, and the ShellBags `Bags`
+  view-settings keys for both hives) — now ~754 probes.
+
+### Safety
+- Clearing mechanism unchanged: exact-path allowlist only (no prefix/suffix widening), HKCU
+  only (including `HKCU\Software\Classes` = the per-user USRCLASS hive), per-key fail-closed.
+  ShellBags clearing also resets Explorer folder-view preferences (cosmetic, rebuilt on use).
+- Validated by a four-lens adversarial review (breakage / mechanism / exact-match / scope —
+  no findings) and host-isolated unit tests of the actual clearing code against throwaway keys
+  mirroring every new key shape, plus a 20/20 scanner-probe-to-allowlist normalization check.
+
+### Changed
+- Scanner report version and reset version bumped to 0.3.0.
+
 ## [0.2.0] - 2026-10-30
 
 First **Reset** increment. The scan stays read-only; the new reset is **opt-in, dry-run by default, and experimental.**
@@ -123,6 +149,7 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.3.0]: https://github.com/keraattin/wipewise/releases/tag/v0.3.0
 [0.2.0]: https://github.com/keraattin/wipewise/releases/tag/v0.2.0
 [0.1.4]: https://github.com/keraattin/wipewise/releases/tag/v0.1.4
 [0.1.3]: https://github.com/keraattin/wipewise/releases/tag/v0.1.3

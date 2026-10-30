@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    WipeWise v0.2 Reset - guided, confirmed removal of the files/folders the WipeWise
+    WipeWise v0.3 Reset - guided, confirmed removal of the files/folders the WipeWise
     scanner found, plus clearing of well-known HKCU history keys, for the categories
     YOU approve. DRY-RUN BY DEFAULT: without -Execute it changes nothing, only prints a plan.
 
@@ -16,17 +16,19 @@
         the Recycle Bin (would be permanent) - size measured on disk. Delete uses a
         reparse-skipping walk that re-checks each directory at removal time. Refuses
         hiberfil/pagefile and any target containing the scan/report/WipeWise files.
-      * Registry: ONLY clears a fixed allowlist of known HKCU history keys (RecentDocs,
-        RunMRU, TypedPaths, WordWheelQuery, ComDlg32 MRUs, TypedURLs, RecentApps) - it
-        removes their values/subkeys, keeping the key. Any other registry probe (HKLM, or
-        an app's config key) is left as GUIDANCE, never auto-changed.
+      * Registry: ONLY clears a fixed allowlist of known HKCU user-history keys (Recent/
+        Run/Typed MRUs, ComDlg32, TypedURLs, RecentApps, Map Network Drive MRU, UserAssist,
+        FeatureUsage, MUICache, ShellBags, and the RDP connection MRUs) - it removes their
+        values/subkeys, keeps the anchor key, then verifies it is empty. Everything else
+        (HKLM, HKCR, or an app's config / recent-files key) is left as GUIDANCE, never
+        auto-changed. ShellBags clearing also resets Explorer folder-view prefs (cosmetic).
       * Cloud-sync refused unless -IncludeCloud (path-based). Admin-only file targets need
         -IncludeAdmin. -Execute also requires -Confirm <this PC's name>.
       * NOT auto-done (guidance only, by design): deleting other user accounts (delete the
         account in Settings instead), other-volume data, and system/admin locations
         outside your profile. The report holds counts/sizes, not your file names.
 
-.NOTES WipeWise v0.2.0. Apache-2.0. EXPERIMENTAL. Always dry-run first; test in a disposable VM before using on real data.
+.NOTES WipeWise v0.3.0. Apache-2.0. EXPERIMENTAL. Always dry-run first; test in a disposable VM before using on real data.
 #>
 [CmdletBinding()]
 param(
@@ -181,8 +183,13 @@ function ConvertTo-WwRegPath([string]$p) {
     if ($x -match '^(HKCU|HKLM|HKCR|HKU|HKCC)\\') { $x = $x -replace '^(HKCU|HKLM|HKCR|HKU|HKCC)\\', '$1:\' }
     return $x
 }
-# EXACT full-path allowlist (lowercased) - only these ten known HKCU history keys are ever auto-cleared
+# EXACT full-path allowlist (lowercased). ONLY these known HKCU user-history keys are ever
+# auto-cleared. Every entry is a leaf-anchor: Clear-WwRegKey removes its values and child
+# subkeys and keeps the anchor itself, so each must be a pure history/MRU/telemetry key that
+# Windows or the owning app rebuilds on next use - never a settings or config key. All are
+# under HKCU (incl. HKCU\Software\Classes = the per-user USRCLASS hive); no HKLM/HKCR/HKU.
 $SafeRegKeys = @(
+    # --- Explorer MRUs / recent (activity-traces) ---
     'hkcu:\software\microsoft\windows\currentversion\explorer\recentdocs',
     'hkcu:\software\microsoft\windows\currentversion\explorer\runmru',
     'hkcu:\software\microsoft\windows\currentversion\explorer\typedpaths',
@@ -191,8 +198,21 @@ $SafeRegKeys = @(
     'hkcu:\software\microsoft\windows\currentversion\explorer\comdlg32\lastvisitedpidlmru',
     'hkcu:\software\microsoft\windows\currentversion\explorer\comdlg32\cidsizemru',
     'hkcu:\software\microsoft\windows\currentversion\explorer\comdlg32\firstfolder',
+    'hkcu:\software\microsoft\windows\currentversion\explorer\map network drive mru',
     'hkcu:\software\microsoft\internet explorer\typedurls',
-    'hkcu:\software\microsoft\windows\currentversion\search\recentapps'
+    'hkcu:\software\microsoft\windows\currentversion\search\recentapps',
+    # --- program-execution history / telemetry (forensic-traces) ---
+    'hkcu:\software\microsoft\windows\currentversion\explorer\userassist',
+    'hkcu:\software\microsoft\windows\currentversion\explorer\featureusage',
+    'hkcu:\software\classes\local settings\software\microsoft\windows\shell\muicache',
+    # --- ShellBags: browsed-folder history (NTUSER + USRCLASS). Clearing resets folder view prefs (cosmetic) ---
+    'hkcu:\software\microsoft\windows\shell\bagmru',
+    'hkcu:\software\microsoft\windows\shell\bags',
+    'hkcu:\software\classes\local settings\software\microsoft\windows\shell\bagmru',
+    'hkcu:\software\classes\local settings\software\microsoft\windows\shell\bags',
+    # --- Remote Desktop (mstsc) connection history: servers + UsernameHint (saved pw lives in Credential Manager) ---
+    'hkcu:\software\microsoft\terminal server client\default',
+    'hkcu:\software\microsoft\terminal server client\servers'
 )
 function Test-WwRegSafe([string]$regPath) {
     if ([string]::IsNullOrWhiteSpace($regPath)) { return $false }
@@ -359,7 +379,7 @@ if ($ReportFile) {
         return $r
     }
     $rep = [ordered]@{
-        tool = 'WipeWise-Reset'; version = '0.2.0'; mode = $Mode; executed = [bool]$Execute
+        tool = 'WipeWise-Reset'; version = '0.3.0'; mode = $Mode; executed = [bool]$Execute
         generatedOn = (Get-Date).ToString('o'); computer = $env:COMPUTERNAME; user = $env:USERNAME
         categories = @($Categories); wouldRemove = $toRemove.Count; wouldRemoveBytes = [int64]$sumBytes
         wouldClearRegistry = $toClearReg.Count; refused = $refused.Count; registryGuidanceOnly = $regSkip.Count

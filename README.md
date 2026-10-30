@@ -4,12 +4,12 @@
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6)
-![Status](https://img.shields.io/badge/status-v0.2%20scan%20%2B%20reset-orange)
+![Status](https://img.shields.io/badge/status-v0.3%20scan%20%2B%20reset-orange)
 ![Claude](https://img.shields.io/badge/Claude-Agent%20Skill-6C5CE7)
 
 WipeWise is an open-source [Claude](https://claude.com/claude-code) skill that helps you find and remove the personal data and usage traces on a Windows 10/11 PC before you **sell, return, recycle, or hand it over**. It inspects the machine, shows you exactly what is there — category by category — and walks you through clearing it.
 
-> **The scan is read-only** — it reads files/folders and registry key counts and runs no external commands. **v0.2 adds an opt-in, experimental reset** (`Invoke-WipeWiseReset.ps1`) that can remove approved items: it is **dry-run by default**, uses the **Recycle Bin by default**, only touches paths under your own profile, refuses system / other-user / other-drive / junction / cloud targets, and needs `-Execute -Confirm <PC name>` to act. **Always dry-run first and keep a backup.** Recovery-proof whole-disk sanitization is still on the [roadmap](#roadmap).
+> **The scan is read-only** — it reads files/folders and registry key counts and runs no external commands. **v0.3 ships an opt-in, experimental reset** (`Invoke-WipeWiseReset.ps1`) that can remove approved items: it is **dry-run by default**, uses the **Recycle Bin by default**, only touches file paths under your own profile, refuses system / other-user / other-drive / junction / cloud targets, clears only a fixed exact-path allowlist of per-user (HKCU) history/forensic registry keys, and needs `-Execute -Confirm <PC name>` to act. **Always dry-run first and keep a backup.** Recovery-proof whole-disk sanitization is still on the [roadmap](#roadmap).
 
 ---
 
@@ -24,7 +24,7 @@ When you pass a computer on, you leave behind far more than the obvious files:
 
 Windows' built-in **"Reset this PC"** does not meet recognized data-erasure standards, and on SSDs it can leave data that is still recoverable. WipeWise exists to close that gap for everyday users, grounded in **NIST SP 800-88 r2** and **IEEE 2883**.
 
-## What it does (v0.2)
+## What it does (v0.3)
 
 | Capability | Details |
 |---|---|
@@ -33,7 +33,7 @@ Windows' built-in **"Reset this PC"** does not meet recognized data-erasure stan
 | Installed programs | Lists programs to sign out of and uninstall |
 | De-link checklist | Accounts, licenses, and cloud links to sign out of — in the right order, so you do not get locked out |
 | Guided cleanup | Exact, user-run steps to clear each category you approve |
-| Reset (opt-in, experimental) | `Invoke-WipeWiseReset.ps1` removes approved files/folders and clears known history keys — **dry-run by default**, Recycle Bin by default, profile-only, refuses system/other-user/other-drive/junction/cloud; **you** run `-Execute` |
+| Reset (opt-in, experimental) | `Invoke-WipeWiseReset.ps1` removes approved files/folders and clears an exact-path allowlist of HKCU history/forensic keys (Explorer MRUs, UserAssist, ShellBags, MUICache, FeatureUsage, RDP MRUs, …) — **dry-run by default**, Recycle Bin by default, profile-only, refuses system/other-user/other-drive/junction/cloud; **you** run `-Execute` |
 | Honest limits | Clear about what a reset can and cannot guarantee; offers a verification re-scan |
 
 ## How it works
@@ -75,7 +75,8 @@ powershell -ExecutionPolicy Bypass -File ~/.claude/skills/wipewise/scripts/Invok
 ## Roadmap
 
 - **v0.1 — Audit and guidance** (read-only) — done
-- **v0.2 — Reset** (experimental) — **you are here:** confirmed, dry-run-first removal of approved files/folders + known Windows history keys; Recycle Bin by default; profile-only with strong safety guards. Next: registry beyond history keys, other accounts/volumes, system/admin locations
+- **v0.2 — Reset** (experimental) — done: confirmed, dry-run-first removal of approved files/folders + known Windows history keys; Recycle Bin by default; profile-only with strong safety guards
+- **v0.3 — Wider reset** (experimental) — **you are here:** the registry auto-clear allowlist now also covers the per-user (HKCU) forensic history keys — UserAssist, ShellBags, MUICache, FeatureUsage, the Remote-Desktop connection MRUs and Map Network Drive MRU — alongside the Explorer MRUs, each cleared by exact path and verified. Next: other accounts/volumes and system/admin locations (still guidance today)
 - **Maximum mode** — recovery-proof, whole-device sanitization: firmware **Sanitize** (NVMe/ATA), cryptographic erase, free-space and metadata cleaning, and a signed **NIST SP 800-88 r2**-aligned certificate — so the previous owner's data cannot be recovered, including by forensic tools
 - **macOS and Linux**
 
