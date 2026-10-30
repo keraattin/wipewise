@@ -21,7 +21,7 @@ compatibility: >-
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   stage: audit-guidance-and-reset
 ---
 
@@ -42,8 +42,8 @@ to erase**.
 - Gives precise, user-run cleanup steps for each category.
 - Explains honestly what cleaning can and cannot guarantee, and offers a read-only re-scan to verify.
 
-**Reset (v0.3, opt-in, EXPERIMENTAL):**
-- `scripts/Invoke-WipeWiseReset.ps1` can remove the files/folders the scan found and clear a fixed allowlist of known **HKCU user-history keys** — the Explorer Recent/Run/Typed/Search MRUs, ComDlg32, Map Network Drive MRU and IE TypedURLs, plus the per-user forensic execution/browsing keys UserAssist, FeatureUsage, MUICache, ShellBags, and the Remote-Desktop connection MRUs — for the categories the user approves. It is **dry-run by default** (shows a plan, changes nothing), sends to the **Recycle Bin by default** (`-Mode Delete` = permanent), only touches file targets **under the user's own profile**, refuses system folders / other users / other drives / junctions / cloud (unless opted in), clears registry **only for that exact-path HKCU allowlist** (wipes each key's values and subkeys, keeps the key, then verifies it emptied), and requires `-Execute -Confirm <PC name>` to act. The **user** runs it; see Step 5b.
+**Reset (v0.4, opt-in, EXPERIMENTAL):**
+- `scripts/Invoke-WipeWiseReset.ps1` can remove the files/folders the scan found and clear a fixed allowlist of known **HKCU user-history keys** — the Explorer Recent/Run/Typed/Search MRUs, ComDlg32, Map Network Drive MRU and IE TypedURLs, plus the per-user forensic execution/browsing keys UserAssist, FeatureUsage, MUICache, ShellBags, and the Remote-Desktop connection MRUs — for the categories the user approves. It is **dry-run by default** (shows a plan, changes nothing), sends to the **Recycle Bin by default** (`-Mode Delete` = permanent), only touches file targets **under the user's own profile**, refuses system folders / other users / other drives / junctions / cloud (unless opted in), clears registry **only for that exact-path HKCU allowlist** (wipes each key's values and subkeys, keeps the key, then verifies it emptied), and requires `-Execute -Confirm <PC name>` to act — or **`-Interactive`**, which walks the user category-by-category and ends in a typed PC-name confirmation (and safely aborts, removing nothing, in a non-interactive shell). The **user** runs it; see Step 5b.
 
 **Does not:**
 - Does **not** reinstall or reset Windows, and does **not** erase whole disks at the firmware level. Full-disk sanitization that meets NIST SP 800-88 "Purge" is a separate future mode; see `references/standards.md`.
@@ -97,7 +97,7 @@ to erase**.
 - For each approved category, give exact, user-run steps: the Windows Settings path, the app's own "clear data / sign out", or a specific command **for the user to run themselves**. Pull the method from `references/trace-catalog.md`.
 - You do not execute these. Present them clearly, one category at a time, and let the user tell you when each is done.
 
-### Step 5b — Optional guided reset (v0.3, experimental)
+### Step 5b — Optional guided reset (v0.4, experimental)
 Only if the user wants the tool to perform removals (otherwise stay with Step 5 guidance):
 - Ensure a current scan JSON exists. Run the reset in **DRY-RUN first** (no `-Execute`) for the approved categories and review the plan together — what it would remove, what it refuses, what it would clear:
   ```
@@ -108,7 +108,11 @@ Only if the user wants the tool to perform removals (otherwise stay with Step 5 
   ```
   powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers -Execute -Confirm <PCNAME>
   ```
-- Back up anything they might want first. For a device leaving their control, pair this with the Maximum-mode caveats in `references/limitations.md` (a per-file reset is not a secure erase).
+- Alternatively the user can run it with **`-Interactive`** (no `-Categories`/`-Execute` flags needed): it lists each category with its size, asks yes/no (showing example names on request), previews the plan, lets them choose Recycle vs Delete, and removes nothing until they type this PC's name at a final gate. It enforces every guard the flag-based run does, and in a non-interactive shell (no console) it aborts without changing anything — so only a person at a real terminal can drive it:
+  ```
+  powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Interactive
+  ```
+- Back up anything they might want first. For a device leaving their control, pair this with the Maximum-mode caveats in `references/limitations.md` (a per-file reset is not a secure erase) — and for a true handover, also sign out/de-link accounts and then run Windows "Reset this PC → Remove everything" so the new owner gets a clean login (WipeWise keeps Windows and the account installed).
 
 ### Step 6 — Limitations and verification
 - Show the relevant points from `references/limitations.md` (especially SSD remnants and cloud copies).
@@ -116,7 +120,7 @@ Only if the user wants the tool to perform removals (otherwise stay with Step 5 
 
 ## Files in this skill
 - `scripts/Invoke-WipeWiseScan.ps1` — read-only scanner; outputs JSON.
-- `scripts/Invoke-WipeWiseReset.ps1` — v0.3 reset (dry-run by default; the user runs `-Execute`). Removes approved files/folders and clears an exact-path allowlist of HKCU history/forensic keys, with the safety guards above.
+- `scripts/Invoke-WipeWiseReset.ps1` — v0.4 reset (dry-run by default; the user runs `-Execute`, or `-Interactive` for a guided flow). Removes approved files/folders and clears an exact-path allowlist of HKCU history/forensic keys, with the safety guards above.
 - `references/trace-catalog.md` — every category: where it lives, what it reveals, how the user removes it, what survives which action.
 - `references/delink-checklist.md` — account, license, and cloud sign-out/de-link steps, with ordering.
 - `references/limitations.md` — honest limits and the "is it really gone?" explanation.

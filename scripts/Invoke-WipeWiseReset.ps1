@@ -1,13 +1,18 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    WipeWise v0.3 Reset - guided, confirmed removal of the files/folders the WipeWise
+    WipeWise v0.4 Reset - guided, confirmed removal of the files/folders the WipeWise
     scanner found, plus clearing of well-known HKCU history keys, for the categories
-    YOU approve. DRY-RUN BY DEFAULT: without -Execute it changes nothing, only prints a plan.
+    YOU approve. DRY-RUN BY DEFAULT: without -Execute (or an -Interactive confirmation) it
+    changes nothing, only prints a plan. -Interactive walks you category-by-category and
+    asks for a final typed confirmation before removing anything.
 
 .DESCRIPTION
     Safety model (hardened after two adversarial reviews):
       * Dry-run unless -Execute. Recycle Bin by default; -Mode Delete is permanent.
+      * -Interactive: choose categories one by one (default No), preview the plan, then a
+        final gate that makes you type this PC's name to apply. Needs a real console - in a
+        non-interactive shell every prompt reads empty and the run safely aborts (removes nothing).
       * Files/folders: acts ONLY on scan-reported targets in -Categories. Containment -
         every target must resolve UNDER your own profile (%USERPROFILE%); system folders,
         other users, other drives, drive roots are refused. Refuses any target whose leaf
@@ -28,7 +33,7 @@
         account in Settings instead), other-volume data, and system/admin locations
         outside your profile. The report holds counts/sizes, not your file names.
 
-.NOTES WipeWise v0.3.0. Apache-2.0. EXPERIMENTAL. Always dry-run first; test in a disposable VM before using on real data.
+.NOTES WipeWise v0.4.0. Apache-2.0. EXPERIMENTAL. Always dry-run first; test in a disposable VM before using on real data.
 #>
 [CmdletBinding()]
 param(
@@ -36,6 +41,7 @@ param(
     [string[]]$Categories,
     [ValidateSet('Recycle', 'Delete')][string]$Mode = 'Recycle',
     [switch]$Execute,
+    [switch]$Interactive,
     [string]$Confirm,
     [switch]$IncludeCloud,
     [switch]$IncludeAdmin,
@@ -51,8 +57,8 @@ if ($Categories -and @($Categories).Count -eq 1 -and $Categories[0] -match ',') 
 if (-not (Test-Path -LiteralPath $ScanFile)) { throw "Scan file not found: $ScanFile" }
 $scan = Get-Content -LiteralPath $ScanFile -Raw -Encoding UTF8 | ConvertFrom-Json
 if (-not $scan.categories) { throw "This does not look like a WipeWise scan (no categories)." }
-if (-not $Categories -or @($Categories).Count -eq 0) {
-    throw "No -Categories given. Pass the category ids you approve, e.g. -Categories personal-files,browsers. Run the scanner first and review it."
+if (-not $Interactive -and (-not $Categories -or @($Categories).Count -eq 0)) {
+    throw "No -Categories given. Pass the category ids you approve, e.g. -Categories personal-files,browsers - or use -Interactive to choose them step by step. Run the scanner first and review it."
 }
 
 # ---------------------------------------------------------------- native: silent recycle
@@ -262,6 +268,44 @@ function Remove-WwTreeSafe {
     for ($i = $dirs.Count - 1; $i -ge 0; $i--) { Remove-Item -LiteralPath $dirs[$i] -Force -Recurse:$false -Confirm:$false -ErrorAction SilentlyContinue }
 }
 
+# ---------------------------------------------------------------- interactive helpers / selection
+function Read-WwLine([string]$prompt) {
+    # Fail-safe line read: in a non-interactive host (no console/stdin) Read-Host throws; we return ''
+    # so every interactive gate defaults to the SAFE answer (No / abort) and nothing is ever auto-removed.
+    try { $v = Read-Host -Prompt $prompt } catch { return '' }
+    if ($null -eq $v) { return '' }
+    return ([string]$v)
+}
+
+if ($Interactive) {
+    Write-Host ""
+    Write-Host "WipeWise Reset - INTERACTIVE. Pick what to clean (default = No). Nothing is removed until a final typed confirmation." -ForegroundColor Cyan
+    $candidateIds = if ($Categories -and @($Categories).Count -gt 0) { @($Categories) } else { @($scan.categories | ForEach-Object { $_.id }) }
+    $chosen = New-Object System.Collections.ArrayList
+    foreach ($cat in $scan.categories) {
+        if (-not ($candidateIds -contains $cat.id)) { continue }
+        if ($DenyCategories -contains $cat.id) { continue }
+        $items = @($cat.items | Where-Object { $_.path })
+        if ($items.Count -eq 0) { continue }
+        $bytes = ($items | Measure-Object -Property bytes -Sum).Sum; if (-not $bytes) { $bytes = 0 }
+        $title = if ($cat.PSObject.Properties['title'] -and $cat.title) { [string]$cat.title } else { [string]$cat.id }
+        while ($true) {
+            $ans = (Read-WwLine ("  [{0}] {1} - {2} item(s), {3:N1} MB. Clean this? [y / N / e=examples / q=quit] " -f $cat.id, $title, $items.Count, ($bytes / 1MB))).Trim().ToLowerInvariant()
+            if ($ans -eq 'e') {
+                $ex = @($items | Select-Object -First 3 | ForEach-Object { try { Split-Path $_.path -Leaf } catch { [string]$_.path } })
+                Write-Host ("      e.g. {0}" -f ($ex -join '  |  ')) -ForegroundColor DarkGray
+                continue
+            }
+            if ($ans -eq 'q') { Write-Host "  Quit - nothing was changed." -ForegroundColor Cyan; exit 0 }
+            if ($ans -eq 'y') { [void]$chosen.Add($cat.id) }
+            break
+        }
+    }
+    $Categories = @($chosen)
+    if (@($Categories).Count -eq 0) { Write-Host "`nNo categories chosen - nothing to do. Nothing was changed." -ForegroundColor Cyan; exit 0 }
+    Write-Host ("`nSelected: {0}" -f ($Categories -join ', ')) -ForegroundColor Cyan
+}
+
 # ---------------------------------------------------------------- build plan
 $plan = New-Object System.Collections.ArrayList
 foreach ($cat in $scan.categories) {
@@ -299,7 +343,7 @@ $sumBytes = ($toRemove | Measure-Object -Property bytes -Sum).Sum; if (-not $sum
 
 # ---------------------------------------------------------------- report plan
 Write-Host ""
-Write-Host "WipeWise Reset - $(if($Execute){'EXECUTE'}else{'DRY-RUN (nothing will be changed)'})" -ForegroundColor $(if($Execute){'Red'}else{'Cyan'})
+Write-Host "WipeWise Reset - $(if($Execute){'EXECUTE'}elseif($Interactive){'INTERACTIVE PREVIEW (review, then confirm)'}else{'DRY-RUN (nothing will be changed)'})" -ForegroundColor $(if($Execute){'Red'}elseif($Interactive){'Yellow'}else{'Cyan'})
 Write-Host ("Mode: {0} | Profile: {1} | Categories: {2}" -f $Mode, $ProfileRoot, ($Categories -join ', '))
 Write-Host ("Would remove: {0} target(s), {1:N1} MB. Would clear: {2} registry history key(s). Refused: {3}. Registry guidance-only: {4}." -f $toRemove.Count, ($sumBytes/1MB), $toClearReg.Count, $refused.Count, $regSkip.Count)
 Write-Host ""
@@ -321,6 +365,24 @@ if ($refused.Count) {
 if ($Mode -eq 'Recycle') {
     Write-Host ""
     Write-Host ("Note: in Recycle mode, a target larger than {0:N0} GB, on a volume with Recycle disabled, or containing a junction/symlink is SKIPPED (not recycled) to avoid a silent permanent delete - use -Mode Delete for those." -f ($RecycleCapBytes/1GB)) -ForegroundColor Yellow
+}
+
+# ---------------------------------------------------------------- interactive confirm -> execute gate
+if ($Interactive -and -not $Execute) {
+    if ($toRemove.Count -eq 0 -and $toClearReg.Count -eq 0) {
+        Write-Host "`nNothing to remove or clear in the chosen categories. Nothing was changed." -ForegroundColor Cyan
+        exit 0
+    }
+    $m = (Read-WwLine "`nRemoval method? [R = Recycle Bin, reversible (default) / D = Delete, PERMANENT] ").Trim().ToLowerInvariant()
+    $Mode = if ($m -eq 'd') { 'Delete' } else { 'Recycle' }
+    Write-Host ("Method: {0}" -f $(if ($Mode -eq 'Delete') { 'DELETE (permanent, cannot be undone)' } else { 'Recycle Bin (reversible)' })) -ForegroundColor $(if ($Mode -eq 'Delete') { 'Red' } else { 'Yellow' })
+    $c = (Read-WwLine ("`nFINAL CONFIRM - to APPLY this on THIS computer, type its name exactly [{0}], or anything else to abort: " -f $env:COMPUTERNAME)).Trim()
+    if ($c -eq $env:COMPUTERNAME) {
+        $Confirm = $env:COMPUTERNAME
+        $Execute = $true
+    } else {
+        Write-Host "`nName did not match - ABORTED. Nothing was changed (this stays a dry-run)." -ForegroundColor Cyan
+    }
 }
 
 # ---------------------------------------------------------------- execute (gated)
@@ -367,7 +429,7 @@ if ($Execute) {
     if ($skip) { Write-Host "Some targets were skipped for safety (too large / junction / cloud). Use -Mode Delete or handle them manually." }
     Write-Host "Re-run Invoke-WipeWiseScan.ps1 and compare to verify what is gone."
 } else {
-    Write-Host "`nThis was a DRY-RUN. Re-run with -Execute -Confirm $($env:COMPUTERNAME) to act (add -Mode Delete for permanent)." -ForegroundColor Cyan
+    Write-Host "`nThis was a DRY-RUN. Re-run with -Execute -Confirm $($env:COMPUTERNAME) to act (add -Mode Delete for permanent), or use -Interactive to choose and confirm step by step." -ForegroundColor Cyan
 }
 
 # ---------------------------------------------------------------- summary report (counts/sizes only; no file names)
@@ -379,7 +441,7 @@ if ($ReportFile) {
         return $r
     }
     $rep = [ordered]@{
-        tool = 'WipeWise-Reset'; version = '0.3.0'; mode = $Mode; executed = [bool]$Execute
+        tool = 'WipeWise-Reset'; version = '0.4.0'; mode = $Mode; executed = [bool]$Execute; interactive = [bool]$Interactive
         generatedOn = (Get-Date).ToString('o'); computer = $env:COMPUTERNAME; user = $env:USERNAME
         categories = @($Categories); wouldRemove = $toRemove.Count; wouldRemoveBytes = [int64]$sumBytes
         wouldClearRegistry = $toClearReg.Count; refused = $refused.Count; registryGuidanceOnly = $regSkip.Count

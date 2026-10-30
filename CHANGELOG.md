@@ -4,6 +4,29 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-10-30
+
+Interactive **Reset**. The scan stays read-only; the reset stays **opt-in, dry-run by
+default, and experimental.**
+
+### Added
+- `-Interactive` mode for the reset: choose categories one at a time (default No, with
+  example leaf names on request), preview the plan, pick Recycle vs Delete, and remove
+  nothing until you type this PC's name at a final confirmation gate. No `-Categories` or
+  `-Execute` flags needed — it's meant to be run by a person at a real terminal.
+
+### Safety
+- Interactive mode adds friction, never removes guards: the same plan-build and execute
+  path run, so profile containment, reparse/junction refusal, Recycle size caps, cloud and
+  admin refusal, and the exact-path registry allowlist all still apply.
+- **Fails closed:** in a non-interactive shell (no console) every prompt reads empty, so the
+  run aborts and removes nothing — only a person at a real terminal can drive a deletion.
+- Validated by a three-lens adversarial review (guard-preservation / confirm-gate integrity
+  / fail-closed) and host tests of both the abort path and the piped happy path.
+
+### Changed
+- Reset version → 0.4.0; scanner report version → 0.4.0 (scanner otherwise unchanged).
+
 ## [0.3.0] - 2026-10-30
 
 Wider **Reset** coverage. The scan stays read-only; the reset stays **opt-in, dry-run by
@@ -149,6 +172,7 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.4.0]: https://github.com/keraattin/wipewise/releases/tag/v0.4.0
 [0.3.0]: https://github.com/keraattin/wipewise/releases/tag/v0.3.0
 [0.2.0]: https://github.com/keraattin/wipewise/releases/tag/v0.2.0
 [0.1.4]: https://github.com/keraattin/wipewise/releases/tag/v0.1.4

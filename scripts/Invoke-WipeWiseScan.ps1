@@ -26,7 +26,7 @@
     Print the category/probe counts and exit. Runs nothing against the system.
 
 .NOTES
-    WipeWise v0.1.1. Apache-2.0. No network access. No writes other than -OutFile.
+    WipeWise v0.4.0. Apache-2.0. No network access. No writes other than -OutFile.
     Reads files/folders and registry key counts only; executes no commands.
 #>
 [CmdletBinding()]
@@ -947,7 +947,7 @@ if ($ListProbes) {
 $isAdmin = Test-WwAdmin
 $report = [ordered]@{
     tool        = 'WipeWise'
-    version     = '0.3.0'
+    version     = '0.4.0'
     mode        = $(if ($Quick) { 'quick' } else { 'full' })
     generatedOn = (Get-Date).ToString('o')
     computer    = $env:COMPUTERNAME
