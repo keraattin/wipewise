@@ -12,17 +12,17 @@ description: >-
   credentials and developer secrets, activity and forensic traces, devices,
   and system leftovers), lists installed programs, and gives the account and
   cloud sign-out checklist plus step-by-step
-  cleanup and verification guidance. It keeps Windows installed, never reinstalls
-  the OS, and never deletes anything on its own: the user confirms and performs
-  each removal.
+  cleanup and verification guidance. It keeps Windows installed and never
+  reinstalls the OS. An optional, confirmed reset (dry-run first, Recycle Bin
+  by default) lets the user execute the approved removals.
 license: Apache-2.0
 compatibility: >-
   Windows 10 (22H2+) and Windows 11. Scanning needs local execution with
   Windows PowerShell 5.1+ (Claude Code or the desktop Code tab). On surfaces
   without local shell access the skill is guidance-only.
 metadata:
-  version: "0.1.4"
-  stage: audit-and-guidance
+  version: "0.2.0"
+  stage: audit-guidance-and-reset
 ---
 
 # WipeWise
@@ -42,15 +42,17 @@ to erase**.
 - Gives precise, user-run cleanup steps for each category.
 - Explains honestly what cleaning can and cannot guarantee, and offers a read-only re-scan to verify.
 
+**Reset (v0.2, opt-in, EXPERIMENTAL):**
+- `scripts/Invoke-WipeWiseReset.ps1` can remove the files/folders the scan found and clear well-known Windows history keys, for the categories the user approves. It is **dry-run by default** (shows a plan, changes nothing), sends to the **Recycle Bin by default** (`-Mode Delete` = permanent), only touches targets **under the user's own profile**, refuses system folders / other users / other drives / junctions / cloud (unless opted in), clears registry only for a **fixed allowlist of history keys**, and requires `-Execute -Confirm <PC name>` to act. The **user** runs it; see Step 5b.
+
 **Does not:**
-- Does **not** delete, overwrite, format, or change anything itself. The user confirms and performs every removal. (A later version adds confirmed, guarded automated execution.)
 - Does **not** reinstall or reset Windows, and does **not** erase whole disks at the firmware level. Full-disk sanitization that meets NIST SP 800-88 "Purge" is a separate future mode; see `references/standards.md`.
-- Does **not** touch other user accounts, or anything outside the categories it lists.
+- The reset does **not** auto-delete other user accounts, other volumes, or system/admin locations outside the profile, and does **not** touch the registry beyond the history-key allowlist — those stay guidance.
 
 ## Golden rules (follow these in every session)
 
 1. **Ownership.** Confirm once that the user owns the PC or is authorized to prepare it. Warn that work or school devices may be under an employer's control or a legal-hold duty; those should go through the organization's IT.
-2. **Read-only by Claude.** You run only the bundled read-only scanner and other read-only inspection commands. You never run a command that deletes, overwrites, formats, clears, or edits the registry. Present the steps; the user runs removals themselves (or through Windows' own UI).
+2. **Claude runs read-only / dry-run only.** You may run the read-only scanner and the reset in **dry-run** (without `-Execute`). You **never** run the reset with `-Execute`, and never any other command that deletes, overwrites, formats, or edits the registry. The **user** runs the actual reset and any removals themselves, after reviewing the dry-run plan.
 3. **Category-by-category approval.** Never dump everything at once. Show each category with its size/count, offer a few examples on request, and let the user decide per category.
 4. **Honesty over reassurance.** Use `references/limitations.md`. Do not claim data is unrecoverable when it may not be (SSD remnants, cloud copies). Do not call this NIST "Purge".
 5. **No falsification or obstruction.** WipeWise removes data; it does not fabricate or alter logs or timestamps to misrepresent what happened, spoof hardware identifiers (e.g. MachineGuid) to evade attribution, or help defeat a legal hold or investigation. Destroying data the user is legally required to keep is out of scope. If asked for falsification or investigation-evasion, decline and explain the scope.
@@ -95,18 +97,32 @@ to erase**.
 - For each approved category, give exact, user-run steps: the Windows Settings path, the app's own "clear data / sign out", or a specific command **for the user to run themselves**. Pull the method from `references/trace-catalog.md`.
 - You do not execute these. Present them clearly, one category at a time, and let the user tell you when each is done.
 
+### Step 5b — Optional guided reset (v0.2, experimental)
+Only if the user wants the tool to perform removals (otherwise stay with Step 5 guidance):
+- Ensure a current scan JSON exists. Run the reset in **DRY-RUN first** (no `-Execute`) for the approved categories and review the plan together — what it would remove, what it refuses, what it would clear:
+  ```
+  powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers
+  ```
+- Explain: Recycle Bin by default (reversible); `-Mode Delete` is permanent. It only touches items under the user's profile and refuses system / other-user / other-drive / junction / cloud targets; registry clearing is limited to known history keys.
+- **The user runs the actual reset** (you never run `-Execute`). They add `-Execute -Confirm <this PC's name>` once satisfied with the dry-run, in a PowerShell session so `-Categories a,b` binds correctly:
+  ```
+  powershell -ExecutionPolicy Bypass -File scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers -Execute -Confirm <PCNAME>
+  ```
+- Back up anything they might want first. For a device leaving their control, pair this with the Maximum-mode caveats in `references/limitations.md` (a per-file reset is not a secure erase).
+
 ### Step 6 — Limitations and verification
 - Show the relevant points from `references/limitations.md` (especially SSD remnants and cloud copies).
 - Offer a **read-only re-scan** to confirm counts and sizes dropped. Compare against the first scan and report what changed and what remains (and why, e.g. a trace that only clears on reboot).
 
 ## Files in this skill
-- `scripts/Invoke-WipeWiseScan.ps1` — the only script; strictly read-only; outputs JSON.
+- `scripts/Invoke-WipeWiseScan.ps1` — read-only scanner; outputs JSON.
+- `scripts/Invoke-WipeWiseReset.ps1` — v0.2 reset (dry-run by default; the user runs `-Execute`). Removes approved files/folders and clears known history keys, with the safety guards above.
 - `references/trace-catalog.md` — every category: where it lives, what it reveals, how the user removes it, what survives which action.
 - `references/delink-checklist.md` — account, license, and cloud sign-out/de-link steps, with ordering.
 - `references/limitations.md` — honest limits and the "is it really gone?" explanation.
 - `references/standards.md` — NIST SP 800-88 r2 / IEEE 2883 in plain language: when a personal-data reset is enough and when full-disk sanitization is needed.
 
-## Out of scope for now (future work, not this skill)
-- Automated, confirmed deletion with a deterministic safety guard.
+## Out of scope for now (future work)
+- Extending the reset to other user accounts, other volumes, and system/admin locations outside the profile, and to the registry beyond the history-key allowlist (guidance only today).
 - "Maximum mode": boot-media firmware sanitize (NVMe/ATA Sanitize), clean OS install, and a signed NIST-aligned erasure certificate.
 - macOS and Linux.

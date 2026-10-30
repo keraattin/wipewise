@@ -944,7 +944,7 @@ if ($ListProbes) {
 $isAdmin = Test-WwAdmin
 $report = [ordered]@{
     tool        = 'WipeWise'
-    version     = '0.1.4'
+    version     = '0.2.0'
     mode        = $(if ($Quick) { 'quick' } else { 'full' })
     generatedOn = (Get-Date).ToString('o')
     computer    = $env:COMPUTERNAME

@@ -4,6 +4,35 @@ All notable changes to WipeWise are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project uses
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-10-30
+
+First **Reset** increment. The scan stays read-only; the new reset is **opt-in, dry-run by default, and experimental.**
+
+### Added
+- `scripts/Invoke-WipeWiseReset.ps1` — a guided, confirmed reset that removes the
+  files/folders the scan found and clears a fixed allowlist of known Windows
+  history keys, for the categories you approve. Dry-run unless `-Execute`;
+  Recycle Bin by default (`-Mode Delete` for permanent); requires
+  `-Confirm <computer name>`.
+
+### Safety
+- Containment: every file target must resolve under your own profile; system
+  folders, other users, other drives, drive roots, cloud-sync (unless
+  `-IncludeCloud`), and any path with a junction/symlink in its leaf or ancestry
+  are refused (fail-closed). Delete uses a reparse-skipping walk; Recycle skips
+  targets too large for the Recycle Bin, containing a junction, or on a volume
+  with Recycle disabled, rather than silently permanent-deleting them.
+- Registry: only the ten known HKCU history keys (RecentDocs, RunMRU, TypedPaths,
+  WordWheelQuery, ComDlg32 MRUs, TypedURLs, RecentApps) are cleared, by exact
+  path — removing values/subkeys and keeping the key; everything else is guidance.
+- Validated by two adversarial reviews (file paths) and one (registry) with every
+  finding fixed, a real `-Execute` test in a disposable VM, and live unit tests.
+- Not auto-done (guidance only): other user accounts, other volumes, system/admin
+  locations outside the profile, and registry beyond the history-key allowlist.
+
+### Changed
+- Scanner report version bumped to 0.2.0 (no scanner behavior change).
+
 ## [0.1.4] - 2026-10-30
 
 More longer-tail application coverage. Still **read-only and guidance-only.**
@@ -94,6 +123,7 @@ Initial public release. **Read-only and guidance-only.**
 - It keeps Windows installed; it does not reinstall the OS or sanitize whole
   disks at the firmware level (planned for a later "Maximum mode").
 
+[0.2.0]: https://github.com/keraattin/wipewise/releases/tag/v0.2.0
 [0.1.4]: https://github.com/keraattin/wipewise/releases/tag/v0.1.4
 [0.1.3]: https://github.com/keraattin/wipewise/releases/tag/v0.1.3
 [0.1.2]: https://github.com/keraattin/wipewise/releases/tag/v0.1.2

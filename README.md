@@ -4,12 +4,12 @@
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6)
-![Status](https://img.shields.io/badge/status-v0.1%20read--only-orange)
+![Status](https://img.shields.io/badge/status-v0.2%20scan%20%2B%20reset-orange)
 ![Claude](https://img.shields.io/badge/Claude-Agent%20Skill-6C5CE7)
 
 WipeWise is an open-source [Claude](https://claude.com/claude-code) skill that helps you find and remove the personal data and usage traces on a Windows 10/11 PC before you **sell, return, recycle, or hand it over**. It inspects the machine, shows you exactly what is there — category by category — and walks you through clearing it.
 
-> **v0.1 is read-only and guidance-only.** It scans and reports; it does **not** delete or change anything on its own. **You** confirm and perform each removal. Automated deletion and recovery-proof, whole-disk sanitization are on the [roadmap](#roadmap).
+> **The scan is read-only** — it reads files/folders and registry key counts and runs no external commands. **v0.2 adds an opt-in, experimental reset** (`Invoke-WipeWiseReset.ps1`) that can remove approved items: it is **dry-run by default**, uses the **Recycle Bin by default**, only touches paths under your own profile, refuses system / other-user / other-drive / junction / cloud targets, and needs `-Execute -Confirm <PC name>` to act. **Always dry-run first and keep a backup.** Recovery-proof whole-disk sanitization is still on the [roadmap](#roadmap).
 
 ---
 
@@ -24,7 +24,7 @@ When you pass a computer on, you leave behind far more than the obvious files:
 
 Windows' built-in **"Reset this PC"** does not meet recognized data-erasure standards, and on SSDs it can leave data that is still recoverable. WipeWise exists to close that gap for everyday users, grounded in **NIST SP 800-88 r2** and **IEEE 2883**.
 
-## What it does (v0.1)
+## What it does (v0.2)
 
 | Capability | Details |
 |---|---|
@@ -33,6 +33,7 @@ Windows' built-in **"Reset this PC"** does not meet recognized data-erasure stan
 | Installed programs | Lists programs to sign out of and uninstall |
 | De-link checklist | Accounts, licenses, and cloud links to sign out of — in the right order, so you do not get locked out |
 | Guided cleanup | Exact, user-run steps to clear each category you approve |
+| Reset (opt-in, experimental) | `Invoke-WipeWiseReset.ps1` removes approved files/folders and clears known history keys — **dry-run by default**, Recycle Bin by default, profile-only, refuses system/other-user/other-drive/junction/cloud; **you** run `-Execute` |
 | Honest limits | Clear about what a reset can and cannot guarantee; offers a verification re-scan |
 
 ## How it works
@@ -42,7 +43,7 @@ Windows' built-in **"Reset this PC"** does not meet recognized data-erasure stan
 3. **Review** — go category by category (counts, sizes, examples).
 4. **Programs** — choose what to uninstall.
 5. **Accounts and cloud** — work through the de-link checklist.
-6. **Clean** — you perform each approved removal, with WipeWise's guidance.
+6. **Clean** — clear each approved category with WipeWise's guidance, or optionally run the **reset** (dry-run first, then `-Execute`) to remove the approved items for you.
 7. **Verify** — a read-only re-scan confirms what is gone.
 
 ## Install (Claude Code / Claude desktop)
@@ -61,12 +62,20 @@ Run the read-only scanner directly:
 powershell -ExecutionPolicy Bypass -File ~/.claude/skills/wipewise/scripts/Invoke-WipeWiseScan.ps1 -OutFile wipewise-scan.json
 ```
 
+Preview a reset (**dry-run — changes nothing**), review the plan, then run it for real only when satisfied (sends to the Recycle Bin; add `-Mode Delete` for permanent):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ~/.claude/skills/wipewise/scripts/Invoke-WipeWiseReset.ps1 -ScanFile wipewise-scan.json -Categories personal-files,browsers
+```
+
+> **The reset is experimental.** It is dry-run by default and only touches paths under your own profile, but it performs irreversible operations — always review the dry-run plan and keep a backup first, and test in a disposable VM (e.g. Windows Sandbox) before using it on data you care about.
+
 > On claude.ai (web) the skill can only give **guidance** — it has no access to your disks. Scanning and cleanup need a local environment (Claude Code or the desktop Code tab) with Windows PowerShell 5.1+.
 
 ## Roadmap
 
-- **v0.1 — Audit and guidance** (read-only) — you are here
-- **v0.2 — Reset** — staged, confirmed deletion with a verification report
+- **v0.1 — Audit and guidance** (read-only) — done
+- **v0.2 — Reset** (experimental) — **you are here:** confirmed, dry-run-first removal of approved files/folders + known Windows history keys; Recycle Bin by default; profile-only with strong safety guards. Next: registry beyond history keys, other accounts/volumes, system/admin locations
 - **Maximum mode** — recovery-proof, whole-device sanitization: firmware **Sanitize** (NVMe/ATA), cryptographic erase, free-space and metadata cleaning, and a signed **NIST SP 800-88 r2**-aligned certificate — so the previous owner's data cannot be recovered, including by forensic tools
 - **macOS and Linux**
 
